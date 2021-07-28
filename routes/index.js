@@ -21,7 +21,6 @@ router
   .post('/getmessage', UserController.get_messages)
   .post('/tenantchatting', UserController.tenant_chatting)
   
-  .post('/parent', UserController.generate_parent_id)
   
   .get('/test',(req,res)=>{res.send({message:'testing'})})
 

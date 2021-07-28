@@ -110,7 +110,9 @@ const customer_chatting_registration = async(req, res) => {
 
 const customer_chatting = async (req, res) => {
     var msg_ack = '';
-    var parent_id=generate_parent_id(req.body.room_id)
+    var parent_id = await Message.findAll({limit: 1,where: {room_id:req.body.room_id },order: [ [ 'createdAt', 'DESC' ]] })
+    parent_id = parent_id[0].parent_message_id + 1;
+    
     let msg = new Message({
             message: req.body.message,
             creator_id: req.body.user_id,
@@ -233,23 +235,14 @@ const get_messages = async (req, res) => {
 
 }
 
-const generate_parent_id = async(room_id) => {
-    
-    const parent_id=await Message.findAll({
-        limit: 1,
-        where: {room_id:room_id },
-        order: [ [ 'createdAt', 'DESC' ]]
-    })
-    console.log('Parent->', parent_id[0].parent_message_id + 1)
-
-    return (parent_id[0].parent_message_id + 1);
-
-}
 
 const tenant_chatting = async (req, res) => {
     var msg_ack = '';
-var parent_id=generate_parent_id(req.body.room_id)
-
+   
+    var parent_id = await Message.findAll({limit: 1,where: {room_id:req.body.room_id },order: [ [ 'createdAt', 'DESC' ]] })
+    parent_id = parent_id[0].parent_message_id + 1;
+    
+    console.log('Parent->', parent_id)
     const user=await User.findOne({ where: {email: req.body.email} })
     let msg = new Message({
             message: req.body.message,
@@ -269,4 +262,4 @@ var parent_id=generate_parent_id(req.body.room_id)
 }
 
 
-module.exports = { customer_chatting_registration ,customer_chatting,show_all_chat_user,get_messages,tenant_chatting,generate_parent_id} ;
+module.exports = { customer_chatting_registration ,customer_chatting,show_all_chat_user,get_messages,tenant_chatting} ;
