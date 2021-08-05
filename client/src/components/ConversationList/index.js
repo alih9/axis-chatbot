@@ -21,8 +21,13 @@ export default function ConversationList(props) {
   const classes = useStyles();
   const [conversations, setConversations] = useState([]);
   const [upcomingconversations, setupcomingconversations] = useState([]);
+  const [upcomingconversationexist, setupcomingconversationexist] = useState(true);
+  
+  
+
   const upcon = useSelector(state => state.message.upcomingconversations);
-  console.log(upcon);
+  const upconlist = useSelector(state => state.message.upcomingconversationlist);
+  // console.log('conversation->',upcon);
   const [didLoadConversionList, setdidLoadConversionList] = useState(false);
   const dispatch = useDispatch();
   useEffect(() => {
@@ -39,12 +44,26 @@ export default function ConversationList(props) {
         chat_room_id: data.room,
         
       }]
-      dispatch(messageAction.setconversation({ msg: newConversation }));
 
-      setupcomingconversations([...upcomingconversations,...newConversation])
+      var temp_conversion = upconlist;
+      temp_conversion = temp_conversion.filter((p_user) => p_user.name != data.username)
+      console.log('temp',temp_conversion)
+      setConversations([...temp_conversion])
+      dispatch(messageAction.setconversationlist({ list: temp_conversion }));
+
+
+      if (temp_conversion.length != 0) {
+        console.log('upcon yes->', upcon)
+        console.log('upcomingconversations yes->', upcomingconversations)
+        console.log('newConversation yes->', newConversation)
+        
+        dispatch(messageAction.setconversation({ msg: newConversation }));
+        setupcomingconversations([...upcomingconversations, ...newConversation])
+       
+      }
       // console.log(upcomingconversations)
     });    
-  }, [props.socket])
+  }, [props.socket,upconlist])
 
   
   const getConversations = async () => {
@@ -69,6 +88,7 @@ export default function ConversationList(props) {
         user:user
       };
     });
+       dispatch(messageAction.setconversationlist({ list: newConversations }));
        setConversations([...conversations, ...newConversations])
        setdidLoadConversionList(true);
   })

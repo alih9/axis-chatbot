@@ -25,14 +25,16 @@ export default function Messenger(props) {
   var room_id = useSelector(state => state.message.room_id);
   var new_msg = useSelector(state => state.message.upcomingmessages);
 
-  
+  var count = useSelector(state => state.message.count);
+  // alert(count)
   const [MY_USER_ID, setMY_USER_ID] = useState(useremail)   // alert(MY_USER_ID)
   const [startMessenger, setStartMessenger] = React.useState(false);
   let i = 0;
   let newMessages = [];
   let previousMsg = {};
   const [chatroom_id, setchatroom_id] = useState('')
-  const [first,setfirst]=useState(true)
+  const [first, setfirst] = useState(true)
+  const [firstsetcount,setfirstsetcount]=useState(true)
   const divRef = useRef(null);
   const dispatch = useDispatch();
   const dispatchProcess = (encrypt, msg, cipher) => {
@@ -55,8 +57,15 @@ export default function Messenger(props) {
       // console.log('CHAT ROOM', room_id)
       
       if (data.room == room_id) {
+        var  c = count;
+        c += 1;
+        console.log('-------------------->', count);
+    alert(`c after ${count}`)
+        dispatch(messageAction.increment());
+        
+    alert(`c ${count}`)
         const msg = {
-          id: i,
+          id: c,
           author: data.username,
           message: data.text,
           timestamp: new Date().getTime()
@@ -79,7 +88,7 @@ export default function Messenger(props) {
         previousMsg = msg;
         newMessages.push(
           <Message
-            key={i}
+            key={c}
             isMine={false}
             startsSequence={startsSequence}
             endsSequence={false}
@@ -89,10 +98,10 @@ export default function Messenger(props) {
         );
 
         dispatch(messageAction.setmessage({newmsg: newMessages}));
-        console.log(new_msg)
+        // console.log(new_msg)
         // console.log('------------New Message')
         // console.log(newMessages)
-        i += 1;
+        
       }
       });
     
@@ -101,7 +110,8 @@ export default function Messenger(props) {
 
   useEffect(() => {
     // console.log('--=>Message Useeffect')
-    console.log(new_msg)
+    console.log('new msg in messenger',new_msg)
+    // alert(`use Effect ${new_msg}`);
 
   }, [new_msg])
 
@@ -114,16 +124,23 @@ export default function Messenger(props) {
 
 
   
-  const sendMessage = async (msg) => {
-    i += 1;
+  const sendMessage = (msg) => {
+  var  c = count;
+    c += 1;
+    // alert(`count ${count}`)
+    dispatch(messageAction.increment());
+    
+
+    // alert(`c ${count}`)
+    // setTimeout(() => { alert(`After time ,count ${count}`)},3000)
     var tempMessages = [
       {
-        id: i,
+        id: c,
         author: MY_USER_ID,
         message: msg,
         timestamp: new Date().getTime()
       },]
-    // alert(i);
+    // alert(c);
     props.socket.emit("chat1", msg);
     let currentMoment = moment(tempMessages.timestamp);
     let startsSequence = true;
@@ -144,7 +161,7 @@ export default function Messenger(props) {
     previousMsg = tempMessages[0];
     newMessages.push(
       <Message
-        key={i}
+        key={c}
         isMine={true}
         startsSequence={startsSequence}
         endsSequence={false}
@@ -164,7 +181,7 @@ export default function Messenger(props) {
 
     const j = 1;
 
-    const a = await axios({
+    const a =  axios({
       method: 'post',
       url: URL,
       headers: {
@@ -177,6 +194,8 @@ export default function Messenger(props) {
         // console.log(data.data);
    
       })
+     
+      
   }
 
 
@@ -230,9 +249,15 @@ export default function Messenger(props) {
 
       // Proceed to the next message.
       i += 1;
+      
       // alert(i);
     }
 
+    if (firstsetcount) {
+      dispatch(messageAction.setCount({ c: i }));
+      setfirstsetcount(false)
+    }
+    // alert(count)
     return tempMessages;
   }
   

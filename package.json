@@ -56,10 +56,11 @@
     "nodemon": "^2.0.7"
   },
   "scripts": {
-    "start": "env-cmd -f .env npx nodemon index.js ",
+    "start": "env-cmd -f .env npx nodemon index.js",
     "client": "npm start --prefix client",
-    "de": "env-cmd -f .env npx nodemon index.js ",
-    "dev": "concurrently \"npm run server\" \"npm run client\""
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+
+    "save": "env-cmd -f .env npx nodemon index.js"
   },
   "author": "",
   "license": "ISC"

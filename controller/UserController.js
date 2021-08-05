@@ -111,7 +111,15 @@ const customer_chatting_registration = async(req, res) => {
 const customer_chatting = async (req, res) => {
     var msg_ack = '';
     var parent_id = await Message.findAll({limit: 1,where: {room_id:req.body.room_id },order: [ [ 'createdAt', 'DESC' ]] })
-    parent_id = parent_id[0].parent_message_id + 1;
+    if (parent_id.length === 0)
+    {
+        parent_id = 0; 
+    }
+    else
+    {
+        parent_id = parent_id[0].parent_message_id + 1;  
+    }
+   
     
     let msg = new Message({
             message: req.body.message,
@@ -174,6 +182,7 @@ const get_messages = async (req, res) => {
     console.log('-------------------------------msg');
     console.log(req.body)
     const msg_id = req.body.chat_room_id;
+    console.log(msg_id)
     const msg=await Message.findAll({ where: { room_id: msg_id } })
    
     var user = await User.findOne({ where: { email: req.body.email } })
@@ -240,8 +249,16 @@ const tenant_chatting = async (req, res) => {
     var msg_ack = '';
    
     var parent_id = await Message.findAll({limit: 1,where: {room_id:req.body.room_id },order: [ [ 'createdAt', 'DESC' ]] })
-    parent_id = parent_id[0].parent_message_id + 1;
-    
+ 
+    if (parent_id.length === 0)
+    {
+        parent_id = 0; 
+    }
+    else
+    {
+        parent_id = parent_id[0].parent_message_id + 1;  
+    }
+   
     console.log('Parent->', parent_id)
     const user=await User.findOne({ where: {email: req.body.email} })
     let msg = new Message({

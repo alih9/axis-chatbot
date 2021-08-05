@@ -80,15 +80,21 @@ io.on("connection", (socket) => {
     
 
   //user sending message
-  socket.on("active_room", (user) => {
+  socket.on("active_room", (user) => { 
     //gets the room user and the message sent
     const p_user = get_Current_User(socket.id);
-
-    io.emit("add_active_room", {
-      userId: p_user.id,
-      username: p_user.username,
-      room:user.roomname,
-    });
+    if (p_user) {
+      console.log('--------------------------------------Add active ROOM executed')
+      io.emit("add_active_room", {
+        userId: p_user.id,
+        username: p_user.username,
+        room: user.roomname,
+      });
+  
+    }
+    else {
+    console.log('User not Active')
+    }
   });
 
   socket.on('error', (error) => {
@@ -98,21 +104,29 @@ io.on("connection", (socket) => {
   socket.on("chat1", (text) => {
     //gets the room user and the message sent
     // console.log(socket)
-      const p_user = send_Msg_User(socket.id);
-      console.log('----------------------------------chat1')
-    console.log(p_user);
-    p_user.map((user) => {
+    const p_user = send_Msg_User(socket.id);
+    if (p_user == null) {
+      console.log('User Not available')
+    }
+
+    else {
       
- io.to(user.id).emit("message", {
-      userId: user.id,
-      username: user.username,
-      room:user.room,
-      text: text,
- });
- console.log('Send to only User')     
-console.log(user)
-    })
-   
+      console.log('----------------------------------chat1')
+      console.log(p_user);
+      p_user.map((user) => {
+      
+        io.to(user.id).emit("message", {
+          userId: user.id,
+          username: user.username,
+          room: user.room,
+          text: text,
+        });
+        console.log('Send to only User')
+        console.log(user)
+      })
+      
+    }
+  
   });
   //when the user exits the room
   socket.on("disconect", () => {
