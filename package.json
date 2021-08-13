@@ -1,5 +1,5 @@
 {
-  "name": "zapier-backend",
+  "name": "Axis Chatbot",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -59,7 +59,6 @@
     "start": "env-cmd -f .env npx nodemon index.js",
     "client": "npm start --prefix client",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
-
     "save": "env-cmd -f .env npx nodemon index.js"
   },
   "author": "",
