@@ -63,6 +63,7 @@
   },
   "scripts": {
     "start": "env-cmd -f .env npx nodemon index.js",
+    "start:server:prod": "node index.js",
     "client": "npm start --prefix client",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "save": "env-cmd -f .env npx nodemon index.js"
