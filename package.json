@@ -2,6 +2,12 @@
   "name": "Axis Chatbot",
   "version": "1.0.0",
   "description": "",
+  "private": true,
+  "author": {
+    "name": "Siddique Muhammad",
+    "email": "contact@hitechbuddies.com",
+    "url": "https://hitechbuddies.com"
+  },
   "main": "index.js",
   "dependencies": {
     "@hapi/joi": "^15.0.3",
@@ -61,6 +67,8 @@
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "save": "env-cmd -f .env npx nodemon index.js"
   },
-  "author": "",
+  "engines": {
+    "node" : "14.17.0"
+  },
   "license": "ISC"
 }
