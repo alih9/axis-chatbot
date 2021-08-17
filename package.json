@@ -1,7 +1,13 @@
 {
-  "name": "zapier-backend",
+  "name": "Axis Chatbot",
   "version": "1.0.0",
   "description": "",
+  "private": true,
+  "author": {
+    "name": "Siddique Muhammad",
+    "email": "contact@hitechbuddies.com",
+    "url": "https://hitechbuddies.com"
+  },
   "main": "index.js",
   "dependencies": {
     "@hapi/joi": "^15.0.3",
@@ -56,12 +62,14 @@
     "nodemon": "^2.0.7"
   },
   "scripts": {
-    "start": "env-cmd -f .env npx nodemon index.js",
+    "start": "env-cmd -f .env npx nodemon app.js",
+    "start:server:prod": "node app.js",
     "client": "npm start --prefix client",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
-
-    "save": "env-cmd -f .env npx nodemon index.js"
+    "save": "env-cmd -f .env npx nodemon app.js"
   },
-  "author": "",
+  "engines": {
+    "node" : "14.17.0"
+  },
   "license": "ISC"
 }
