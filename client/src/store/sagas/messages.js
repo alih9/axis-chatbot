@@ -6,7 +6,7 @@ const messageDetails = {
     '2': [
         {
             id: '1',
-            imageUrl: null,
+            imageUrl: require('../../images/profiles/user.png'),
             imageAlt: null,
             messageText: 'Ok fair enough. Well good talking to you.',
             createdAt: 'Oct 20',

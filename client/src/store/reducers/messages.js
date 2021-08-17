@@ -33,7 +33,7 @@ const messagesReducer = (state = initialState, action) => {
            
             newConversationMapEntry.messages.unshift(
                   {
-                      imageUrl: null,
+                      imageUrl: require('../../images/profiles/user.png'),
                       imageAlt: null,
                       messageText: messages,
                       createdAt: date+' '+time,
