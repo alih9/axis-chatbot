@@ -20,7 +20,7 @@ artifacts:
     - "migrations/**/*"
     - "models/**/*"
     - "routes/**/*"
-    - "index.js"
+    - "app.js"
     - "Procfile"
     - "package.json"
     - ".ebextensions/**/*"
