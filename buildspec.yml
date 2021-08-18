@@ -1,27 +1,27 @@
 version: 0.1
 
 phases:
-    install:
-        commands:
-            - npm install
-    pre_build:
-        commands:
-            - echo Nothing to do in the pre_build phase...
-    build:
-        commands:
-            - echo Build started on `date`
-    post_build:
-        commands:
-            - echo Post build started on `date`
+  install:
+    commands:
+      - npm install --prefix client
+      - npm install
+
+  build:
+    commands:
+      - npm run build --prefix client
+  post_build:
+    commands:
+
 artifacts:
-    files:
-        - 'config/**/*'
-        - 'controller/**/*'
-        - 'middleware/**/*'
-        - 'migrations/**/*'
-        - 'models/**/*'
-        - 'routes/**/*'
-        - 'index.js'
-        - 'package.json'
-        - '.ebextensions/**/*'
-        - '.npmrc'
+  files:
+    - "config/**/*"
+    - "controller/**/*"
+    - "middleware/**/*"
+    - "migrations/**/*"
+    - "models/**/*"
+    - "routes/**/*"
+    - "index.js"
+    - "package.json"
+    - ".ebextensions/**/*"
+    - ".npmrc"
+    - "client/**/*"

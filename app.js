@@ -32,14 +32,14 @@ app.get('/', (req, res) => {
 
 const port = process.env.PORT;
 console.log(process.env.PORT)
-var app = app.listen(port,()=>console.log(`Listening to the port ${port}`));
+var host = app.listen(port,()=>console.log(`Listening to the port ${port}`));
 
   
 
 const color = require("colors");
 const { get_Current_User, user_Disconnect, join_User,send_Msg_User } = require("./controller/SocketUserController");
 const socket = require("socket.io");
-const io = socket(app);
+const io = socket(host);
 
 //initializing the socket io connection 
 io.on("connection", (socket) => {

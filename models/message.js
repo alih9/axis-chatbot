@@ -19,6 +19,7 @@ module.exports = (sequelize, DataTypes) => {
     room_id: DataTypes.INTEGER,
     parent_message_id: DataTypes.INTEGER,
     email: DataTypes.STRING,
+    sent_at: DataTypes.DATE,
     deleted_at: DataTypes.DATE
   }, {
     sequelize,

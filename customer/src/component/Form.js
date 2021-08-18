@@ -1,6 +1,6 @@
 import '../asset/style.css';
 import 'react-chat-widget/lib/styles.css';
-import {  useState } from 'react'
+import React,{  useState } from 'react'
 const Form = (props) => {
 
   const [name, setName] = useState('');

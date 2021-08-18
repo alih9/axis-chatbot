@@ -1,5 +1,5 @@
 {
-  "name": "Axis Chatbot",
+  "name": "axischatbot",
   "version": "1.0.0",
   "description": "",
   "private": true,
@@ -10,6 +10,7 @@
   },
   "main": "index.js",
   "dependencies": {
+    "babel-jest": "^24.9.0",
     "@hapi/joi": "^15.0.3",
     "ansi-align": "^3.0.0",
     "bcrypt": "^5.0.1",
@@ -18,6 +19,7 @@
     "connect-flash": "^0.1.1",
     "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
+    "date-and-time": "^2.0.0",
     "detect-libc": "^1.0.3",
     "duplexer3": "^0.1.4",
     "ee-first": "^1.1.1",
@@ -64,12 +66,14 @@
   "scripts": {
     "start": "env-cmd -f .env npx nodemon app.js",
     "start:server:prod": "node app.js",
+    "server": "env-cmd -f .env npx nodemon app.js",
     "client": "npm start --prefix client",
-    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "customer": "npm start --prefix customer",
+    "dev": "concurrently \"npm run server\" \"npm run customer\" \"npm run client\"",
     "save": "env-cmd -f .env npx nodemon app.js"
   },
   "engines": {
-    "node" : "14.17.0"
+    "node": "14.17.0"
   },
   "license": "ISC"
 }

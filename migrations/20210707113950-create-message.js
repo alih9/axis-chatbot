@@ -23,6 +23,9 @@ module.exports = {
       parent_message_id: {
         type: Sequelize.INTEGER
       },
+      sent_at: {
+        type: Sequelize.DATE
+      },
       deleted_at: {
         type: Sequelize.DATE
       },

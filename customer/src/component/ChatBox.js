@@ -1,8 +1,9 @@
 
 import { Widget, addResponseMessage,dropMessages,renderCustomComponent,toggleInputDisabled,addUserMessage } from 'react-chat-widget';
 import 'react-chat-widget/lib/styles.css';
-import { useEffect,useState} from 'react';
+import React, { useEffect,useState} from 'react';
 import Form from './Form'
+import date from 'date-and-time';
 import message from './message'
 const axios = require('axios')
 
@@ -38,7 +39,10 @@ function ChatBox(props) {
 const handleSubscribeForm = async (name,email) => {
   toggleInputDisabled();
   setemail(email)
-    const URL='http://localhost:5000/api/userdata'
+    // const URL='http://localhost:5000/api/userdata'
+    const NODE_API = process.env.REACT_APP_NODE_API
+    const URL = `${NODE_API}/api/userdata`
+    alert(URL)
     const AuthStr='Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTYyNTk5MTMwNywiZXhwIjoxNjI2MDc3NzA3fQ.rtQZNlGvIxkdFvlXJjU-ddIhBjXkpAEz7_x2O9bcLcE';
   
   await axios({
@@ -94,7 +98,10 @@ const handleSubscribeForm = async (name,email) => {
  
   const handleNewUserMessage = async (message) => {
     props.socket.emit("chat1", message);
-    const URL='http://localhost:5000/api/customerchatting'
+    const NODE_API = process.env.REACT_APP_NODE_API
+    const URL = `${NODE_API}/api/customerchatting`
+    const now = new Date();
+    const currentDate=date.format(now, 'YYYY-MM-DD HH:mm:ss');  
     const AuthStr='Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTYyNTk5MTMwNywiZXhwIjoxNjI2MDc3NzA3fQ.rtQZNlGvIxkdFvlXJjU-ddIhBjXkpAEz7_x2O9bcLcE';
     const i = parent_message_id + 1;
   setParent_message_id(i)
@@ -105,7 +112,7 @@ const handleSubscribeForm = async (name,email) => {
       'Content-Type': 'application/json',
       'authorization': AuthStr 
     },
-    data: {  message: message, user_id: user.id ,room_id:room.id,parent_message_id:i ,email:email },
+    data: {  message: message, user_id: user.id ,room_id:room.id,parent_message_id:i,date:currentDate ,email:email },
   }).then(data => {
        console.log(data.data);
    
@@ -114,10 +121,12 @@ const handleSubscribeForm = async (name,email) => {
   
   
   return (
-    <Widget  handleNewUserMessage={handleNewUserMessage}
+    <Widget
+      
+      handleNewUserMessage={handleNewUserMessage}
 
-    title="My new awesome title"
-    subtitle="And my cool subtitle"
+    title="Axis Chatbot"
+    subtitle="Welcome to axis chatbot"
   />
   );
 }

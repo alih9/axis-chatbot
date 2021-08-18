@@ -126,7 +126,8 @@ const customer_chatting = async (req, res) => {
             creator_id: req.body.user_id,
             room_id: req.body.room_id,
             parent_message_id:parent_id,
-            email:req.body.email
+            email: req.body.email,
+            sent_at:req.body.date
         })
         msg = await msg.save().then(async (message) => {
             msg_ack = message;
@@ -266,7 +267,8 @@ const tenant_chatting = async (req, res) => {
             creator_id: user.id,
             room_id: req.body.room_id,
             parent_message_id:parent_id,
-            email:req.body.email
+            email:req.body.email,
+            sent_at:req.body.date
         })
         msg = await msg.save().then(async (message) => {
             msg_ack = message;
