@@ -21,6 +21,7 @@ artifacts:
     - "models/**/*"
     - "routes/**/*"
     - "index.js"
+    - "Procfile"
     - "package.json"
     - ".ebextensions/**/*"
     - ".npmrc"
