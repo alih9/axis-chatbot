@@ -37,7 +37,7 @@ var host = app.listen(port,()=>console.log(`Listening to the port ${port}`));
   
 
 const color = require("colors");
-const { get_Current_User, user_Disconnect, join_User,send_Msg_User } = require("./controller/SocketUserController");
+const { get_Current_User, user_Disconnect, join_User,send_Msg_User,deactivate_Room } = require("./controller/SocketUserController");
 const socket = require("socket.io");
 const io = socket(host);
 
@@ -49,20 +49,21 @@ io.on("connection", (socket) => {
     const p_user = join_User(socket.id, username, roomname);
     console.log(socket.id, "=id");
     socket.join(p_user.room);
-
+    
     //display a welcome message to the user who have joined a room
-    socket.emit("message", {
+    // socket.emit("message", {
       
-      username: p_user.username,
-      text: `Welcome ${p_user.username}`,
-    });
+    //   username: p_user.username,
+    //   text: `Welcome ${p_user.username}`,
+    //   welcome:true
+    // });
 
     //displays a joined room message to all other room users except that particular user
-    socket.broadcast.to(p_user.room).emit("message", {
-      userId: p_user.id,
-      username: p_user.username,
-      text: `${p_user.username} has joined the chat`,
-    });
+    // socket.broadcast.to(p_user.room).emit("message", {
+    //   userId: p_user.id,
+    //   username: p_user.username,
+    //   text: `${p_user.username} has joined the chat`,
+    // });
   });
 
   //user sending message
@@ -134,11 +135,17 @@ io.on("connection", (socket) => {
     const p_user = user_Disconnect(socket.id);
 
     if (p_user) {
-      io.to(p_user.room).emit("message", {
-        userId: p_user.id,
-        username: p_user.username,
-        text: `${p_user.username} has left the room`,
-      });
+      // io.to(p_user.room).emit("message", {
+      //   userId: p_user.id,
+      //   username: p_user.username,
+      //   text: `${p_user.username} has left the room`,
+      // });
     }
+  });
+
+  socket.on("deactivate_room", (id) => {
+    //the user is deleted from array of users and a left room message displayed
+    deactivate_Room(id);
+
   });
 });

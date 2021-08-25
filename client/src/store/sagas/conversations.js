@@ -1,5 +1,5 @@
 import { put, takeEvery ,takeLatest} from 'redux-saga/effects';
-
+import dates from 'date-and-time';
 import { messagesLoaded } from '../actions';
 
 const delay = (ms) => new Promise(res => setTimeout(res, ms));
@@ -26,6 +26,31 @@ var conversations = [
     
 ];
 
+const getactiveroom = async (chatRoom_id) => {
+
+    for (var i = 0; i < conversations.length; i++) {
+    //    alert(JSON.stringify(conversations[i]))
+        const NODE_API=process.env.REACT_APP_NODE_API
+        const URL=`${NODE_API}/api/checkuseractivation`
+       const a=await fetch(URL, {
+            method: 'POST',
+            headers: {
+                    'Content-Type': 'application/json',
+                    // 'authorization': AuthStr 
+                  },
+          body:JSON.stringify({'chat_room_id':conversations.id})
+        }).then(response => response.json())
+           .then(data => {
+
+               conversations[i].isactive = data.is_active;
+        //    alert(JSON.stringify(data))
+            }).catch((error) => {
+                console.error('Error:', error);
+            });
+    } 
+    
+
+}
 
 
 const getConversations = async () => {
@@ -35,16 +60,21 @@ const getConversations = async () => {
         method: 'GET',
     })
     .then(response => response.json())
-        .then(data => {
-            let newConversations = data.chat.map(result => {
+        .then(async(data) => {
+            let newConversations = data.chat.map((result) => {
                 //   const user = result.user;
+                const now = new Date(result.chatRoom.last_message_update_at)
+                // var currentDate = date.format(now, 'YYYY-MM-DD hh:mm:ss');
+                // alert(myDate.toLocaleString());
+            
+               const currentDate = now.toLocaleString();
                 return {
                     id: result.chatRoom.id,
                     imageUrl: require('../../images/profiles/user.png'),
                     imageAlt: `${result.chatRoom.room_name}`,
                     title: `${result.chatRoom.room_name}`,
-                    createdAt: '1 year ago',
-                    latestMessageText: 'Thank you. I appreciate that.',
+                    createdAt: `${currentDate}`,
+                    latestMessageText: `${result.chatRoom.last_message}`,
                     messages: []
                 }
             });
@@ -60,12 +90,14 @@ const getConversations = async () => {
 export const conversationsSaga = function* () {
     yield(getConversations())
     yield delay(1000);
-    yield put(messagesLoaded(conversations[0].id, conversations[0].messages, false, null));
+    yield (getactiveroom())
+    yield delay(1000);
+    // yield put(messagesLoaded(conversations[0].id, conversations[0].messages, false, null));
     yield put({
         type: 'CONVERSATIONS_LOADED',
         payload: {
             conversations,
-            selectedConversation: conversations[0]
+            selectedConversation: ""
         }
     });
 }

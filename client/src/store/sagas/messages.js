@@ -35,17 +35,17 @@ const userMessage = async (conversation_id) => {
         .then(async (data) => {
             
             const msge=   await data.msg.map(result => {
-                const isMyMessage = result.email === process.env.REACT_APP_EMAIL ? true : false
+                const isMyMessage = result.email === process.env.REACT_APP_EMAIL ? true : false;
+                const now = new Date(result.sent_at);
                return {
                     id: result.parent_message_id,
                     imageUrl: require('../../images/profiles/user.png'),
                     imageAlt: result.email,
                     email: result.email,
                     messageText: result.message,
-                    createdAt: '1 week ago',
+                    createdAt: now.toLocaleString(),
                     isMyMessage: isMyMessage
                 }
-
 
                 
             });

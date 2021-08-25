@@ -4,11 +4,13 @@ phases:
   install:
     commands:
       - npm install --prefix client
+      - npm install --prefix customer
       - npm install
 
   build:
     commands:
       - npm run build --prefix client
+      - npm run build --prefix customer
   post_build:
     commands:
 

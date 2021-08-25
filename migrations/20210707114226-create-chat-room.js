@@ -21,7 +21,13 @@ module.exports = {
       updatedAt: {
         allowNull: false,
         type: Sequelize.DATE
-      }
+      },
+      last_message_update_at: {
+        type:Sequelize.DATE
+      },
+      last_message: {
+        type: Sequelize.STRING
+      },
     });
   },
   down: async (queryInterface, Sequelize) => {

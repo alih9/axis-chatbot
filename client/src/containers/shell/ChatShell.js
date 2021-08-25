@@ -1,6 +1,6 @@
 import React, { useEffect,useState } from 'react';
 import { connect } from 'react-redux';
-
+import dates from 'date-and-time';
 import { conversationChanged, newMessageAdded, conversationDeleted, conversationsRequested ,updateMessagesDetails, sendMessage, updateConversation, deletedAddedConversation, updateConversationDateMessage} from '../../store/actions';
 import ConversationSearch from '../../components/conversation/conversation-search/ConversationSearch';
 import NoConversations from '../../components/conversation/no-conversations/NoConversations';
@@ -21,10 +21,27 @@ const ChatShell = ({ conversations, selectedConversation,messageDetails, convers
         loadConversations();
     }, [loadConversations]);
 
-
+ 
     useEffect(() => {
         socket.on("message", (data) => {
-          onMessageUpdate(data.room, data.text, false, null, false)
+            console.log('-------------------------------------Data undefined',data)
+            alert(JSON.stringify(data))
+            
+            // alert(date.text)
+                var today = new Date();
+                // currentDate = now.toGMTString();
+            
+                var date = dates.format(today, 'DD/MM/YYYY');
+                var time = dates.format(today, 'hh:mm:ss ');
+                date = today.toLocaleString();
+                time = "";
+                onMessageUpdate(data.room, data.text, false, null, false, date, time)
+                time = date;
+                
+                updateConversationDateMessage(data.room, data.text, date, time)
+                setTimeout(updateConversationDateMessage(data.room, data.text, date, time),500)
+                
+            
         });
     
         socket.on("add_active_room", (data) => {
@@ -36,6 +53,20 @@ const ChatShell = ({ conversations, selectedConversation,messageDetails, convers
 
     }, [socket])
      
+    const [searchConversation, setsearchConversation] = React.useState('')
+    const [searchList, setsearchList] = React.useState(false)
+    const [newsearchList, setnewSearchList] = React.useState(false)
+    
+    React.useEffect(() => {
+        setnewSearchList(conversations.filter((n)=>  n.title===searchConversation ))
+        if (searchConversation.length > 0) {
+            setsearchList(true)
+        }
+        else {
+            setsearchList(false)
+        }
+    }, [searchConversation])
+    
     const joinRoom = (conversationId) => {
         socket.emit("joinRoom", { username: process.env.REACT_APP_EMAIL, roomname: conversationId })
     }
@@ -53,7 +84,7 @@ const ChatShell = ({ conversations, selectedConversation,messageDetails, convers
         </>
     );
 
-    if (conversations.length > 0) {
+    if (selectedConversation) {
         conversationContent = (
             <>
                 <MessageList conversationId={selectedConversation.id} selectedConversation={selectedConversation}/>
@@ -63,19 +94,37 @@ const ChatShell = ({ conversations, selectedConversation,messageDetails, convers
 
     return (
         <div id="chat-container">
-            <ConversationSearch conversations={conversations} />
-            <ConversationList
+            <ConversationSearch
+                searchConversation={searchConversation}
+                setsearchConversation={setsearchConversation}
+                conversations={conversations}
+            />
+            {searchList && <ConversationList
+                onConversationItemSelected={conversationChanged}
+                joinRoom={joinRoom}
+                disconnect={disconnect}
+                conversations={newsearchList}
+                selectedConversation={selectedConversation}
+                conversationRender={conversationRender}
+                setconversationRender={setconversationRender} />}
+
+            {!searchList && <ConversationList
                 onConversationItemSelected={conversationChanged}
                 joinRoom={joinRoom}
                 disconnect={disconnect}
                 conversations={conversations}
                 selectedConversation={selectedConversation}
                 conversationRender={conversationRender}
-                setconversationRender={setconversationRender}/>
+                setconversationRender={setconversationRender} />}
+
+            
+            
             <NewConversation />
             <ChatTitle 
                 selectedConversation={selectedConversation}
-                onDeleteConversation={onDeleteConversation} />
+                onDeleteConversation={onDeleteConversation}
+                socket={socket}
+            />
             {conversationContent}
             <ChatForm 
                 selectedConversation={selectedConversation}

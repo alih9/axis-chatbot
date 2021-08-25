@@ -59,9 +59,26 @@ console.log('-------------------------disconnect')
   }
 }
 
+function deactivate_Room(id) 
+{
+  const index = c_users.findIndex((p_user) => p_user.room === id);
+  console.log('-------------------------Deactivate User')
+    if (index !== -1) {
+      return c_users.splice(index, 1)[0];
+    }
+}
+function userexist(room) {
+
+ 
+  var roomuser = Array.from(c_users);
+  roomuser = roomuser.filter((p_user) => p_user.room === room)
+  return roomuser;
+}
 module.exports = {
   join_User,
   get_Current_User,
   user_Disconnect,
   send_Msg_User,
+  deactivate_Room,
+  userexist
 };

@@ -15,7 +15,7 @@ const MessageList = ({ selectedConversation,conversationId, getMessagesForConver
         if (!messageDetails) {
             loadMessages(conversationId, null);
         }
-    }, [messageDetails, loadMessages, conversationId])
+    }, [messageDetails])
 
     if (messages && messages.length > 0) {
         messageItems = messages.map((message, index) => {

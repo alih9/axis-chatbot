@@ -101,7 +101,9 @@ const handleSubscribeForm = async (name,email) => {
     const NODE_API = process.env.REACT_APP_NODE_API
     const URL = `${NODE_API}/api/customerchatting`
     const now = new Date();
-    const currentDate=date.format(now, 'YYYY-MM-DD HH:mm:ss');  
+    var currentDate=date.format(now, 'YYYY-MM-DD hh:mm:ss'); 
+    currentDate = now.toGMTString();
+    // alert(myDate.toLocaleString());
     const AuthStr='Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTYyNTk5MTMwNywiZXhwIjoxNjI2MDc3NzA3fQ.rtQZNlGvIxkdFvlXJjU-ddIhBjXkpAEz7_x2O9bcLcE';
     const i = parent_message_id + 1;
   setParent_message_id(i)
@@ -124,7 +126,7 @@ const handleSubscribeForm = async (name,email) => {
     <Widget
       
       handleNewUserMessage={handleNewUserMessage}
-
+      showTimeStamp={false}
     title="Axis Chatbot"
     subtitle="Welcome to axis chatbot"
   />

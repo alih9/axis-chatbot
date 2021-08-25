@@ -3,7 +3,7 @@ const initialState = {
     selectedConversation: {}
 };
 
-initialState.selectedConversation = initialState.conversations[1];
+// initialState.selectedConversation = initialState.conversations[1];
 
 const conversationsReducer = (state = initialState, action) => {
     switch (action.type) {
@@ -41,7 +41,8 @@ const conversationsReducer = (state = initialState, action) => {
             
         case 'UPDATE_CONVERSATION_DATE_MESSAGE': {
 
-            const { conversationId, message ,time} = action.payload;
+            const { conversationId, message, time } = action.payload;
+            // alert(time)
             const newState = { ...state };
             console.log('-----------After Message and Date Update',newState)
             const updatedState = newState.conversations.find(conversation => conversation.id === conversationId);

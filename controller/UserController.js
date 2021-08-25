@@ -1,6 +1,7 @@
 const express=require('express');
 const db = require("../models/index");
 const user = require('../models/user');
+const socketUser = require('./SocketUserController')
 const User = db.user;
 const Tenant = db.tenant;
 const Message = db.Message;
@@ -131,7 +132,9 @@ const customer_chatting = async (req, res) => {
         })
         msg = await msg.save().then(async (message) => {
             msg_ack = message;
-
+            var chat_room_update = await ChatRoom.findOne({ where: { id: req.body.room_id } })
+            await chat_room_update.update({ last_message: req.body.message,last_message_update_at:req.body.date })
+            
         }).catch(err => res.send({ message: (err.errors[0].message), success: false }));
     
      
@@ -273,6 +276,9 @@ const tenant_chatting = async (req, res) => {
         msg = await msg.save().then(async (message) => {
             msg_ack = message;
 
+            var chat_room_update = await ChatRoom.findOne({ where: { id: req.body.room_id } })
+            await chat_room_update.update({ last_message: req.body.message,last_message_update_at:req.body.date })
+            
         }).catch(err => res.send({ message: (err.errors[0].message), success: false }));
     
      
@@ -280,5 +286,13 @@ const tenant_chatting = async (req, res) => {
     return msg_ack;
 }
 
+const check_user_activation = async (req,res) => {
+  var flag = false;
+  const room=  socketUser.userexist(req.body.room);
+    if (room.length>0) {
+        flag = true;
+    }
+    res.status(200).send({ is_active: flag,room:room,success:true })
+}
 
-module.exports = { customer_chatting_registration ,customer_chatting,show_all_chat_user,get_messages,tenant_chatting} ;
+module.exports = { customer_chatting_registration ,customer_chatting,show_all_chat_user,get_messages,tenant_chatting , check_user_activation} ;

@@ -20,6 +20,7 @@ router
   .get('/show_all_user_chat', UserController.show_all_chat_user)
   .post('/getmessage', UserController.get_messages)
   .post('/tenantchatting', UserController.tenant_chatting)
+  .post('/checkuseractivation', UserController.check_user_activation)
   
   
   .get('/test',(req,res)=>{res.send({message:'testing'})})
