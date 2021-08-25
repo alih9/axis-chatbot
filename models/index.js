@@ -15,7 +15,7 @@ config = {
   "dialect": process.env.DB_DIALECT,
   "port": process.env.DB_PORT
 };
-console.log(config);
+
 
 let sequelize;
 if (config.use_env_variable) {

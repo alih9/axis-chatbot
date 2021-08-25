@@ -146,15 +146,6 @@ const customer_chatting = async (req, res) => {
 
 const show_all_chat_user = async (req,res) => {
     console.log('-------------------------------start');
-    config = {
-  "username": process.env.DB_USER,
-  "password": process.env.DB_PASSWORD,
-  "database": process.env.DB_NAME,
-  "host": process.env.DB_HOST,
-  "dialect": process.env.DB_DIALECT,
-  "port": process.env.DB_PORT
-    };
-    console.log(config);
     const chatRoom = await ChatRoom.findAll({ order: [['updatedAt', 'DESC']] });
     var chat = [];
     var user = [];
