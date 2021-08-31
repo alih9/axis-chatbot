@@ -17,11 +17,12 @@ router
   .get('/check_token', AuthController.check_token)
   .post('/userdata', UserController.customer_chatting_registration)
   .post('/customerchatting', UserController.customer_chatting)
-  .get('/show_all_user_chat', UserController.show_all_chat_user)
+  .post('/show_all_user_chat', UserController.show_all_chat_users)
   .post('/getmessage', UserController.get_messages)
   .post('/tenantchatting', UserController.tenant_chatting)
   .post('/checkuseractivation', UserController.check_user_activation)
-  
+  .post('/existuser', UserController.existence_user)  
+  .post('/getuserdetails', UserController.get_user_details)
   
   .get('/test',(req,res)=>{res.send({message:'testing'})})
 

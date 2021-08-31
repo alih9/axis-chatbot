@@ -11,6 +11,9 @@ module.exports = {
       tenant_id: {
         type: Sequelize.INTEGER
       },
+      is_tenant: {
+        type: Sequelize.INTEGER
+      },
       name: {
         type: Sequelize.STRING
       },

@@ -51,13 +51,15 @@ const customer_chatting_registration = async(req, res) => {
             .then(async(result) => {
             let chatroom =await new ChatRoom({
                 room_name: user.name,
+                tenant_id:req.body.tenant_id,
                 is_active: 1
             
             })
                await chatroom.save().then(async (room) => {
                const roomparticipation = new RoomParticipant({
                     room_id: room.id,
-                    user_id: user.id,
+                   user_id: user.id,
+                    tenant_id:req.body.tenant_id,
                     is_blocked: 0
                 })
                 await roomparticipation.save().then(participant => {
@@ -81,18 +83,21 @@ const customer_chatting_registration = async(req, res) => {
         let user =await new User({
             name: name,
             email: email,
+            tenant_id:req.body.tenant_id,
             requestIsActive: 1,
         })
         user = await user.save().then(async (user) => {
             let chatroom = await new ChatRoom({
                 room_name: user.name,
-                is_active: 1
+                is_active: 1,
+                tenant_id:req.body.tenant_id,
             
             })
                await chatroom.save().then(async(room) => {
                 const roomparticipation = new RoomParticipant({
                     room_id: room.id,
                     user_id: user.id,
+                    tenant_id:req.body.tenant_id,
                     is_blocked: 0
                 })
                await roomparticipation.save().then( async(participant) => {
@@ -145,37 +150,80 @@ const customer_chatting = async (req, res) => {
 
 
 const show_all_chat_user = async (req,res) => {
-    console.log('-------------------------------start');
-    const chatRoom = await ChatRoom.findAll({ order: [['updatedAt', 'DESC']] });
+    console.log('-------------------------------start (show_all_chat_user)');
     var chat = [];
-    var user = [];
-    if (chatRoom) {
-        console.log('-------------------------------1');
-        for(let i = 0; i < chatRoom.length; i++) {
-           
-            console.log('-------------------------------2');
+    const user_temp = await User.findOne({ where: { email: req.body.email } });
+    if (user_temp)
+    {
+    const roomparticipants_temp = await RoomParticipant.findAll({
+        where: { user_id: user_temp.id }
+    });
+    // console.log(roomparticipants_temp)
+        for (h = 0; h < roomparticipants_temp.length; h++) {
+            // console.log('-------------------------------h->' + JSON.stringify(roomparticipants_temp[h]));
+            const chatRoom = await ChatRoom.findOne({
+            where: { id: roomparticipants_temp[h].room_id }
+        });
+        // console.log('-------------------------------chatroom->'+chatRoom);
+        var user = [];
+        if (chatRoom) {
+            // console.log('-------------------------------2');
             const roomparticipants = await RoomParticipant.findAll({
-                where: { room_id: chatRoom[i].id }
+                where: { room_id: chatRoom.id }
             });
             
             for (let j = 0; j < roomparticipants.length; j++) {
                 console.log('-------------------------------3');
-                    const u = await User.findOne({ where: { id: roomparticipants[j].user_id } });
-                    user.push(u);
-                
+                const u = await User.findOne({ where: { id: roomparticipants[j].user_id } });
+                user.push(u);
             }
             // console.log(chatRoom[i])
             // console.log(roomparticipants)
             // console.log(user)
-            chat.push( { chatRoom:chatRoom[i], roomparticipants:roomparticipants, user:user });
-            
-        
+            chat.push({ chatRoom: chatRoom, roomparticipants: roomparticipants, user: user });
+        }
+        }
     }
-    }
-
     console.log('-------------------------------end');
+    res.status(200).send({ chat: chat,success:true })
+  
+}
+
+
+const show_all_chat_users = async (req,res) => {
+    console.log('-------------------------------start (show_all_chat_user)');
+    var chat = [];
     
-        res.status(200).send({ chat: chat,success:true })
+    const tenant_temp = await Tenant.findOne({ where: { email: req.body.email } });
+    if (tenant_temp)
+    {
+                console.log(tenant_temp)
+        const chatRoom = await ChatRoom.findAll({
+            where: { tenant_id: tenant_temp.id }
+        });
+        console.log(chatRoom)
+        for (h = 0; h < chatRoom.length; h++) {
+        var user = [];
+        if (chatRoom) {
+            // console.log('-------------------------------2');
+            const roomparticipants = await RoomParticipant.findAll({
+                where: { room_id: chatRoom[h].id }
+            });
+            
+            for (let j = 0; j < roomparticipants.length; j++) {
+                console.log('-------------------------------3');
+                const u = await User.findOne({ where: { id: roomparticipants[j].user_id } });
+                user.push(u);
+            }
+            // console.log(chatRoom[i])
+            // console.log(roomparticipants)
+            // console.log(user)
+            chat.push({ chatRoom: chatRoom[h], roomparticipants: roomparticipants, user: user });
+        }
+        }
+    }
+    console.log('-------------------------------end');
+    res.status(200).send({ chat: chat,success:true })
   
 }
 
@@ -295,4 +343,41 @@ const check_user_activation = async (req,res) => {
     res.status(200).send({ is_active: flag,room:room,success:true })
 }
 
-module.exports = { customer_chatting_registration ,customer_chatting,show_all_chat_user,get_messages,tenant_chatting , check_user_activation} ;
+const existence_user = async (req, res) => {
+console.log(req.body)
+
+    // console.log('----->Name', req.body.user['https://axis.doneforyou.com/user_metadata'].name)
+    // console.log('----->User http',req.body.user['https://axis.doneforyou.com/user_metadata'])
+    var tenant = await Tenant.findOne({ where: { email: req.body.user.email } })
+    // console.log(tenant)
+    
+    if (!tenant) {
+        tenant = await Tenant.create({
+            name: req.body.user['https://axis.doneforyou.com/user_metadata'].name ,
+            first_name: req.body.user['https://axis.doneforyou.com/user_metadata'].first_name,
+            last_name: req.body.user['https://axis.doneforyou.com/user_metadata'].last_name,
+            sub: req.body.user.sub,
+            email: req.body.user.email,
+     
+        })
+
+    }
+ 
+    res.status(200).send({ tenant: tenant,success:true })
+
+}
+
+
+const get_user_details = async (req, res) => {
+    try {
+        var tenant = await Tenant.findOne({ where: { id: req.body.tenant_id } })
+        res.status(200).send({ tenant: tenant, success: true })
+    }
+    catch (error) {
+    console.log(error)
+    }
+    
+}
+    
+
+module.exports = { customer_chatting_registration ,customer_chatting,show_all_chat_user,get_messages,tenant_chatting , check_user_activation,existence_user,show_all_chat_users,get_user_details} ;

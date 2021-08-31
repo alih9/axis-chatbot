@@ -3,13 +3,14 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import ChatBox from './component/ChatBox';
 
-import io from "socket.io-client";
-// const socket = io.connect('/');
-const socket = io(process.env.REACT_APP_NODE_API);
+import { BrowserRouter as  Router,Route, Switch } from "react-router-dom";
+
 // var socket = io({transports: ['websocket'], upgrade: false}).connect('/');
 ReactDOM.render(
-  <React.StrictMode>
-     <ChatBox socket={socket}/>
-   </React.StrictMode>,
+     <Router>
+        <Switch>
+              <Route path="/:id" component={ChatBox} />
+    </Switch>
+  </Router>,
   document.getElementById('root')
 );

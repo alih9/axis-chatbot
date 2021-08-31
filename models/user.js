@@ -17,6 +17,7 @@ module.exports = (sequelize, DataTypes) => {
     tenant_id: DataTypes.INTEGER,
     name: DataTypes.STRING,
     email: DataTypes.STRING,
+    is_tenant: DataTypes.INTEGER,
     requestIsActive: DataTypes.INTEGER,
   }, {
     sequelize,

@@ -1,7 +1,7 @@
 import { put, takeEvery ,takeLatest} from 'redux-saga/effects';
 import dates from 'date-and-time';
 import { messagesLoaded } from '../actions';
-
+import { select } from 'redux-saga/effects'; 
 const delay = (ms) => new Promise(res => setTimeout(res, ms));
 
 var conversations = [
@@ -53,11 +53,16 @@ const getactiveroom = async (chatRoom_id) => {
 }
 
 
-const getConversations = async () => {
+const getConversations = async (email) => {
     const NODE_API=process.env.REACT_APP_NODE_API
     const URL=`${NODE_API}/api/show_all_user_chat`
     await fetch(URL, { 
-        method: 'GET',
+        method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    // 'authorization': AuthStr 
+                  },
+          body:JSON.stringify({'email':email})
     })
     .then(response => response.json())
         .then(async(data) => {
@@ -88,9 +93,11 @@ const getConversations = async () => {
 
 
 export const conversationsSaga = function* () {
-    yield(getConversations())
+    const getToken = (state) => state.usersState;
+    const token = yield select(getToken);
+    yield(getConversations(token.userDetails.email))
     yield delay(1000);
-    yield (getactiveroom())
+    // yield (getactiveroom())
     yield delay(1000);
     // yield put(messagesLoaded(conversations[0].id, conversations[0].messages, false, null));
     yield put({

@@ -9,13 +9,18 @@ import NewConversation from '../../components/conversation/new-conversation/NewC
 import ChatTitle from '../../components/chat-title/ChatTitle';
 import MessageList from '../message/MessageList';
 import ChatForm from '../../components/chat-form/ChatForm';
+import LogoutButton from '../../components/util/LogoutButton';
 
+import {useAuth0  } from "@auth0/auth0-react";
 import './ChatShell.scss';
 
 import io from "socket.io-client";
-const socket = io.connect('/');
-const ChatShell = ({ conversations, selectedConversation,messageDetails, conversationChanged, onMessageSubmitted, onMessageUpdate, sendMessage, onDeleteConversation, loadConversations, updateConversation, deletedAddedConversation,updateConversationDateMessage }) =>
+
+const socket = io(process.env.REACT_APP_NODE_API);
+const ChatShell = ({ conversations,user, selectedConversation,messageDetails, conversationChanged, onMessageSubmitted, onMessageUpdate, sendMessage, onDeleteConversation, loadConversations, updateConversation, deletedAddedConversation,updateConversationDateMessage }) =>
 {
+    const { isAuthenticated } = useAuth0();
+    const [is_active, setis_active] = React.useState(true);
     const [conversationRender, setconversationRender] = useState(false)
     useEffect(() => {
         loadConversations();
@@ -49,15 +54,22 @@ const ChatShell = ({ conversations, selectedConversation,messageDetails, convers
             updateConversation(data.room, data.username)
             setconversationRender(true)
 
-          });    
+        });
+        
+        if (is_active) {
+            socket.emit("add_active_user", { email: user.email})
+            setis_active(false)
+        }
 
     }, [socket])
      
     const [searchConversation, setsearchConversation] = React.useState('')
     const [searchList, setsearchList] = React.useState(false)
     const [newsearchList, setnewSearchList] = React.useState(false)
+   
+   
     
-    React.useEffect(() => {
+    useEffect(() => {
         setnewSearchList(conversations.filter((n)=>  n.title===searchConversation ))
         if (searchConversation.length > 0) {
             setsearchList(true)
@@ -68,7 +80,7 @@ const ChatShell = ({ conversations, selectedConversation,messageDetails, convers
     }, [searchConversation])
     
     const joinRoom = (conversationId) => {
-        socket.emit("joinRoom", { username: process.env.REACT_APP_EMAIL, roomname: conversationId })
+        socket.emit("joinRoom", { username: user.email, roomname: conversationId })
     }
     const disconnect = (conversationId) => {
         socket.emit("disconect");
@@ -93,6 +105,8 @@ const ChatShell = ({ conversations, selectedConversation,messageDetails, convers
     }
 
     return (
+        <>
+          {isAuthenticated? <LogoutButton/> : '' }
         <div id="chat-container">
             <ConversationSearch
                 searchConversation={searchConversation}
@@ -128,6 +142,7 @@ const ChatShell = ({ conversations, selectedConversation,messageDetails, convers
             {conversationContent}
             <ChatForm 
                 selectedConversation={selectedConversation}
+                user={user}
                 onMessageSubmitted={onMessageSubmitted}
                 onMessageUpdate={onMessageUpdate}
                 messageDetails={messageDetails}
@@ -135,13 +150,15 @@ const ChatShell = ({ conversations, selectedConversation,messageDetails, convers
                 SendLiveMessage={SendLiveMessage}
                 updateConversationDateMessage={updateConversationDateMessage}
             />
-        </div>
+            </div>
+            </>
     );
 }
 
 const mapStateToProps = state => {
     return {
         conversations: state.conversationState.conversations,
+        user: state.usersState.userDetails,
         selectedConversation: state.conversationState.selectedConversation,
         messageDetails: state.messagesState.messageDetails
     };

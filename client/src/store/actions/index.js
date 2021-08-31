@@ -59,3 +59,10 @@ export const deletedAddedConversation = (conversationId) => ({
     payload: { conversationId }
 });
 
+
+
+export const updatedUserCredential = (user) => ({
+    type: 'UPDATED_USER_CREDENTIAL',
+    payload: { user }
+});
+

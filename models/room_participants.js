@@ -16,6 +16,7 @@ module.exports = (sequelize, DataTypes) => {
   room_participants.init({
     room_id: DataTypes.INTEGER,
     user_id: DataTypes.INTEGER,
+    tenant_id: DataTypes.INTEGER,
     is_blocked: DataTypes.INTEGER
   }, {
     sequelize,

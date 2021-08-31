@@ -37,7 +37,7 @@ var host = app.listen(port,()=>console.log(`Listening to the port ${port}`));
   
 
 const color = require("colors");
-const { get_Current_User, user_Disconnect, join_User,send_Msg_User,deactivate_Room } = require("./controller/SocketUserController");
+const { get_Current_User, user_Disconnect, join_User,send_Msg_User,deactivate_Room,add_active_user } = require("./controller/SocketUserController");
 const socket = require("socket.io");
 const io = socket(host);
 
@@ -76,6 +76,12 @@ io.on("connection", (socket) => {
       username: p_user.username,
       text: text,
     });
+  });
+
+  socket.on("add_active_user", (email) => {
+    //gets the room user and the message sent
+    const active_user = add_active_user(socket.id, email);
+    
   });
 
     

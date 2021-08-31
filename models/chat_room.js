@@ -16,6 +16,7 @@ module.exports = (sequelize, DataTypes) => {
   Chat_room.init({
     room_name: DataTypes.STRING,
     is_active: DataTypes.INTEGER,
+    tenant_id: DataTypes.INTEGER,
     last_message_update_at: DataTypes.DATE,
     last_message: DataTypes.STRING,
   }, {

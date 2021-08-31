@@ -11,7 +11,7 @@ const adjustTextMessage = (textMessage) => {
     return textMessage.trim();
 };
 
-const ChatForm = ({ selectedConversation, onMessageSubmitted, onMessageUpdate, messageDetails, sendMessage,SendLiveMessage,updateConversationDateMessage }) => {
+const ChatForm = ({ user, selectedConversation, onMessageSubmitted, onMessageUpdate, messageDetails, sendMessage,SendLiveMessage,updateConversationDateMessage }) => {
     const [textMessage, setTextMessage] = useState('');
     const [disableButton, setdisableButton] = useState(false);
     const [senddisableButton, setsenddisableButton] = useState(true);
@@ -59,7 +59,7 @@ const ChatForm = ({ selectedConversation, onMessageSubmitted, onMessageUpdate, m
                    
                     onMessageUpdate(conversationId, textMessage, messageDetails[conversationId].hasMoreMessages, messageDetails[conversationId].lastMessageId, true, date , time)
                     SendLiveMessage(textMessage);
-                    const email = process.env.REACT_APP_EMAIL;
+                    const email = user.email;
                     sendmsg(conversationId, textMessage, email, currentDate , time);
                     setdisableButton(true);
                     setsenddisableButton(false)
@@ -75,7 +75,6 @@ const ChatForm = ({ selectedConversation, onMessageSubmitted, onMessageUpdate, m
         const URL=`${NODE_API}/api/tenantchatting`
         // const token = Cookies.get('token');
         // const AuthStr='Bearer '+token;
-        // alert(process.env.REACT_APP_EMAIL)
        await fetch(URL, { 
             method: 'POST',
             headers: {
@@ -104,7 +103,6 @@ const ChatForm = ({ selectedConversation, onMessageSubmitted, onMessageUpdate, m
         const URL=`${NODE_API}/api/tenantchatting`
         // const token = Cookies.get('token');
         // const AuthStr='Bearer '+token;
-        // alert(process.env.REACT_APP_EMAIL)
        await fetch(URL, { 
             method: 'POST',
             headers: {

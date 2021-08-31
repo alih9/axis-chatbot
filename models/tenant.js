@@ -15,6 +15,9 @@ module.exports = (sequelize, DataTypes) => {
   };
   tenant.init({
     name: DataTypes.STRING,
+    first_name: DataTypes.STRING,
+    last_name: DataTypes.STRING,
+    sub: DataTypes.STRING,
     email: { type: DataTypes.STRING, unique: true ,required:true},
     password:  { type: DataTypes.STRING ,required:true},
     phone: DataTypes.STRING,

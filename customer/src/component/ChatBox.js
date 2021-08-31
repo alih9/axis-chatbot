@@ -4,7 +4,14 @@ import 'react-chat-widget/lib/styles.css';
 import React, { useEffect,useState} from 'react';
 import Form from './Form'
 import date from 'date-and-time';
-import message from './message'
+import message from './message';
+import io from "socket.io-client";
+import { useParams } from "react-router-dom";
+
+// Get ID from URL
+
+// const socket = io.connect('/');
+const socket = io(process.env.REACT_APP_NODE_API);
 const axios = require('axios')
 
 function ChatBox(props) {
@@ -15,7 +22,7 @@ function ChatBox(props) {
   const [parent_message_id, setParent_message_id] = useState(0);
   const [AllMsg, setAllMsg] = useState([])
   
-  
+  const params = useParams();
   useEffect(() => {
     toggleInputDisabled();
     renderCustomComponent(Form, { handleSubscribeForm });
@@ -29,22 +36,44 @@ function ChatBox(props) {
 
 
   useEffect(() => {
-    props.socket.on("message", (data) => {
+    socket.on("message", (data) => {
       addResponseMessage(data.text)
     });
-  }, [props.socket]);
+  }, [socket]);
   
-  
+
 
 const handleSubscribeForm = async (name,email) => {
   toggleInputDisabled();
   setemail(email)
     // const URL='http://localhost:5000/api/userdata'
     const NODE_API = process.env.REACT_APP_NODE_API
-    const URL = `${NODE_API}/api/userdata`
-    alert(URL)
+    const URL = `${NODE_API}/api/getuserdetails`
+    // alert(URL)
     const AuthStr='Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTYyNTk5MTMwNywiZXhwIjoxNjI2MDc3NzA3fQ.rtQZNlGvIxkdFvlXJjU-ddIhBjXkpAEz7_x2O9bcLcE';
   
+    await axios({
+      method: 'post',
+      url: URL,
+      headers: {
+        'Content-Type': 'application/json',
+        'authorization': AuthStr 
+      },
+      data: {  tenant_id:params.id },
+      })
+      .then((data) => {
+        console.log(data.tenant.email);
+       
+       })
+      .catch((error) =>
+      {
+    console.error('Error:', error);
+      });
+
+  
+
+  
+  URL = `${NODE_API}/api/userdata`;
   await axios({
     method: 'post',
     url: URL,
@@ -52,12 +81,12 @@ const handleSubscribeForm = async (name,email) => {
       'Content-Type': 'application/json',
       'authorization': AuthStr 
     },
-    data: {  name: name, email: email  },
+    data: {  name: name, email: email ,tenant_id:params.id },
   })
     .then((data) => {
       console.log(data.data.chattingRoom.room.id);
-      props.socket.emit("joinRoom", { username: email, roomname: data.data.chattingRoom.room.id })
-      props.socket.emit("active_room", { username: email, roomname: data.data.chattingRoom.room.id })
+      socket.emit("joinRoom", { username: email, roomname: data.data.chattingRoom.room.id })
+      socket.emit("active_room", { username: email, roomname: data.data.chattingRoom.room.id })
 
        dropMessages()
       setRoom(data.data.chattingRoom.room)
@@ -97,7 +126,7 @@ const handleSubscribeForm = async (name,email) => {
   
  
   const handleNewUserMessage = async (message) => {
-    props.socket.emit("chat1", message);
+    socket.emit("chat1", message);
     const NODE_API = process.env.REACT_APP_NODE_API
     const URL = `${NODE_API}/api/customerchatting`
     const now = new Date();

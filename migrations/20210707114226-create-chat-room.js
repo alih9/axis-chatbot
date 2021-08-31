@@ -14,6 +14,9 @@ module.exports = {
       is_active: {
         type: Sequelize.INTEGER
       },
+      tenant_id: {
+        type: Sequelize.INTEGER
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE
