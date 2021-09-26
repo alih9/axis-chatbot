@@ -20,7 +20,9 @@ module.exports = {
       email: {
         type: Sequelize.STRING
       },
-    
+      requestIsActive:{
+        type: Sequelize.INTEGER
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

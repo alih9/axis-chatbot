@@ -11,6 +11,20 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+    
+      this.hasMany(models.room_participants,{
+        foreignKey: "user_id",
+        constraints: false
+      })
+     
+      this.hasMany(models.Message,{
+        foreignKey: "creator_id"
+      })
+
+
+      // Project.hasOne(User)
+      // Project.hasMany(User, {as: 'Workers'})
+
     }
   };
   user.init({
@@ -18,6 +32,7 @@ module.exports = (sequelize, DataTypes) => {
     name: DataTypes.STRING,
     email: DataTypes.STRING,
     is_tenant: DataTypes.INTEGER,
+    requestIsActive: DataTypes.INTEGER,
   }, {
     sequelize,
     modelName: 'user',

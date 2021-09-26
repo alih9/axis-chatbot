@@ -1,7 +1,7 @@
 import { put, takeLatest } from 'redux-saga/effects';
 import { select } from 'redux-saga/effects'; 
 import { messagesLoaded } from '../actions';
-
+import {datetimeformat} from '../../utility/datetime'
 const messageDetails = {
     '2': [
         {
@@ -36,13 +36,16 @@ const userMessage = async (conversation_id,email) => {
                 const msge = await data.msg.map(result => {
                     const isMyMessage = result.email === email ? true : false;
                     const now = new Date(result.sent_at);
+                    const date=datetimeformat(now)
+
+
                     return {
                         id: result.parent_message_id,
                         imageUrl: require('../../images/profiles/user.png'),
                         imageAlt: result.email,
                         email: result.email,
                         messageText: result.message,
-                        createdAt: now.toLocaleString(),
+                        createdAt: date,
                         isMyMessage: isMyMessage
                     }
 

@@ -42,26 +42,44 @@ const conversationsReducer = (state = initialState, action) => {
         case 'UPDATE_CONVERSATION_DATE_MESSAGE': {
 
             const { conversationId, message, time } = action.payload;
-            // alert(time)
             const newState = { ...state };
-            console.log('-----------After Message and Date Update',newState)
-            const updatedState = newState.conversations.find(conversation => conversation.id === conversationId);
-            updatedState.createdAt = time;
-            updatedState.latestMessageText = message;
-            console.log('-----------Before Message and Date Update',newState)
+
+            var updatedState = newState.conversations.find(conversation => conversation.id === conversationId);
+                     
+       
+            let selectedConversationIndex = newState.conversations.findIndex(c => c.id === conversationId);
+            newState.conversations.splice(selectedConversationIndex, 1);
+    
+         
+            newState.conversations.unshift({
+                id:updatedState.id,
+                imageUrl: updatedState.imageUrl,
+                imageAlt: updatedState.imageAlt,
+                title: updatedState.title,
+                createdAt: time,
+                is_active:updatedState.is_active,
+                latestMessageText:message ,
+                messages: updatedState.messages,
+    
+               } )
+               
+                                                                                                                                                               
             return newState;
-            }
+            }                
         case 'UPDATE_CONVERSATION': {
             const existingState = { ...state };
             const newState = existingState;
-            
-           
+            const { conversationId ,time ,email} = action.payload;
+            let selectedConversationIndex = newState.conversations.findIndex(c => c.id === conversationId);
+            newState.conversations.splice(selectedConversationIndex, 1);
+    
+                                         
           newState.conversations.unshift( {
-            id: action.payload.conversationId,
+            id: conversationId,
             imageUrl: require('../../images/profiles/daryl.png'),
-            imageAlt: action.payload.email,
-            title: action.payload.email,
-            createdAt: 'August 3',
+            imageAlt: email,
+            title: email,
+            createdAt: time,
             is_active:1,
             latestMessageText: 'New Message',
             messages: []

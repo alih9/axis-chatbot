@@ -4,6 +4,8 @@ import { Provider } from 'react-redux';
 import { createStore, applyMiddleware, compose } from 'redux';
 import createSagaMiddleware from 'redux-saga';
 import { BrowserRouter as  Router,Route, Switch } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import './index.scss';
 import rootSaga from './store/sagas';
@@ -24,7 +26,8 @@ ReactDOM.render(
             <Auth0Provider>
                 <Switch>
                     <Route path="/" component={App} />
-                </Switch>
+                </Switch>  
+                <ToastContainer autoClose={2000} />
             </Auth0Provider>
         </Router>
     </Provider>,

@@ -71,7 +71,8 @@ const handleSubscribeForm = async (name,email) => {
     //   {
     // console.error('Error:', error);
     //   });
-
+    var today = new Date();
+    var currentDate = today.toGMTString();
   
 
   
@@ -83,7 +84,7 @@ const handleSubscribeForm = async (name,email) => {
       'Content-Type': 'application/json',
       'authorization': AuthStr 
     },
-    data: {  name: name, email: email ,tenant_id:params.id },
+    data: {  name: name, email: email ,tenant_id:params.id, last_message_update_at:currentDate,last_message:"New Message" },
   })
     .then((data) => {
       console.log(data.data.chattingRoom.room.id);
@@ -127,6 +128,8 @@ const handleSubscribeForm = async (name,email) => {
   
 });
   };
+
+
   
  
   const handleNewUserMessage = async (message) => {
@@ -154,7 +157,7 @@ const handleSubscribeForm = async (name,email) => {
    
 })
   }
-  
+
   
   return (
     <Widget

@@ -3,6 +3,7 @@ import FormButton from '../controls/buttons/FormButton';
 import AttachmentIcon from '../controls/icons/attachment-icon/AttachmentIcon';
 import './ChatForm.scss';
 import dates from 'date-and-time';
+import  {nowdate,nowtime} from '../../utility/datetime'
 const isMessageEmpty = (textMessage) => {
     return adjustTextMessage(textMessage).length === 0;
 }
@@ -44,15 +45,11 @@ const ChatForm = ({ user, selectedConversation, onMessageSubmitted, onMessageUpd
             
             if (!isMessageEmpty(textMessage)) {
                 var today = new Date();
-                var date = dates.format(today, 'DD/MM/YYYY');
-                var time=dates.format(today, 'hh:mm:ss');
-
+                var date=nowdate()
+                var time=nowtime()
+                date='';
                 var currentDate = today.toGMTString();
-            
-                //  date = today.toLocaleString();
-                // var date = today.getDate()+'/'+(today.getMonth()+1)+'/'+today.getFullYear();
-                // var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
-                // var dateTime = date+' '+time;
+                
                 onMessageSubmitted(textMessage, date , time);
                 if (selectedConversation !== undefined) {
                     const conversationId = selectedConversation.id;
@@ -98,7 +95,7 @@ const ChatForm = ({ user, selectedConversation, onMessageSubmitted, onMessageUpd
 
 
     const sendmsg = async(conversationId, messages, email, date , time) => {
-        alert(date)
+        // alert(date)
         const NODE_API = process.env.REACT_APP_NODE_API
         const URL=`${NODE_API}/api/tenantchatting`
         // const token = Cookies.get('token');
