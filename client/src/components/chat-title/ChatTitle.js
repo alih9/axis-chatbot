@@ -1,7 +1,6 @@
 import React from 'react';
-
+import axios from 'axios'
 import TrashIcon from '../controls/icons/trash-icon/TrashIcon';
-
 import { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import Menu from '@material-ui/core/Menu';
@@ -19,19 +18,35 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 
 import './ChatTitle.scss';
 
-const ChatTitle = ({ selectedConversation, onDeleteConversation,socket }) => {
+const ChatTitle = ({ selectedConversation, onDeleteConversation,socket,user }) => {
     let chatTitleContents = null;
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [open, setOpen] = React.useState(false);
+    const[delBox,setDelBox] =React.useState(false)
+
 
     const handleClickOpen = () => {
       setOpen(true);
     };
-    const handleClickDeactivate = () => {
+    const handleClickDeactivate = async() => {
       
-      socket.emit('deactivate_room',selectedConversation.id)
+      socket.emit('deactivate_room')
+
+      const NODE_API = process.env.REACT_APP_NODE_API
+      const URL = `${NODE_API}/api/deactivateuserroom`
+      const AuthStr='Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTYyNTk5MTMwNywiZXhwIjoxNjI2MDc3NzA3fQ.rtQZNlGvIxkdFvlXJjU-ddIhBjXkpAEz7_x2O9bcLcE';
+     
+      await axios({method: 'post',url: URL, headers: {'Content-Type': 'application/json','authorization': AuthStr },
+      data: {  tenant_email:user.email,chat_room:selectedConversation.id,email:selectedConversation.title },
+    }).then(data => { 
+    alert(JSON.stringify(data))
+    })
       setOpen(false);
     };
+
+    const delHandleClickClose=()=>{
+      setDelBox(false)
+    }
   
     const handleClickClose = () => {
       setOpen(false);
@@ -133,7 +148,7 @@ const StyledMenuItem = withStyles((theme) => ({
         aria-describedby="alert-dialog-description"
       >
         
-       {selectedConversation.isactive && <>
+       {selectedConversation.is_active && <>
      <DialogTitle id="alert-dialog-title">{"Deactivation Room?"}</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
@@ -149,7 +164,7 @@ const StyledMenuItem = withStyles((theme) => ({
           </Button>
         </DialogActions> </>}
 
-        {!selectedConversation.isactive && <> <DialogTitle id="alert-dialog-title">{"Deactivation Room?"}</DialogTitle>
+        {!selectedConversation.is_active && <> <DialogTitle id="alert-dialog-title">{"Deactivation Room?"}</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
             Room is Already Deactive!
@@ -169,9 +184,31 @@ const StyledMenuItem = withStyles((theme) => ({
                     </span>
                 </div>
                 
-                <div onClick={ () => { onDeleteConversation(); } } title="Delete Conversation">
-                    <TrashIcon />
-                </div>
+                <div onClick={ () => { setDelBox(true); } } title="Delete Conversation">
+                    <TrashIcon /> </div>
+                    <Dialog
+        open={delBox}
+        onClose={delHandleClickClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+    
+     <DialogTitle id="alert-dialog-title">{"Delete Room?"}</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Are Sure you want to Delete the Room?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={delHandleClickClose} color="primary">
+            Cancel
+          </Button>            
+          <Button onClick={()=>{onDeleteConversation(); delHandleClickClose();  }  } color="warning" autoFocus>
+            Deleted
+          </Button>
+        </DialogActions> 
+        </Dialog>
+               
                
             </>
         );

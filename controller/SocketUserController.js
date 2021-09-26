@@ -5,13 +5,13 @@ const active_users = [];
 function add_active_user(id, username) {
 
   const index = active_users.findIndex((a_user) => a_user.username === username);
-  console.log('-------------------------Deactivate User')
+  
     if (index !== -1) {
       return active_users.splice(index, 1)[0];
     }
     const a_user = { id, username };
     active_users.push(a_user);
-
+    console.log('------------------a_user',a_user);
 }
 
 function get_active_user(username) {
@@ -82,16 +82,27 @@ function send_Msg_User(id) {
   
  
 }
+function get_reciever_user(email)
+{
+  
+console.log('email----------------------------->(get_reciever_user)',email)
+console.log('All active users----------------------------->(get_reciever_user)',active_users)
+
+  const user = active_users.find((a_user) => a_user.username === email);
+  console.log('user----------------------------->(get_reciever_user)',user)
+return user;
+
+}
 
 // called when the user leaves the chat and its user object deleted from array
 
 
 function deactivate_Room(id) 
 {
-  const index = c_users.findIndex((p_user) => p_user.room === id);
+  const index = active_users.findIndex((p_user) => p_user.id === id);
   console.log('-------------------------Deactivate User')
     if (index !== -1) {
-      return c_users.splice(index, 1)[0];
+      return active_users.splice(index, 1)[0];
     }
 }
 function userexist(room) {
@@ -110,6 +121,7 @@ module.exports = {
   send_Msg_User,
   deactivate_Room,
   userexist,
+  get_reciever_user
 
 
 };

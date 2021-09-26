@@ -62,6 +62,7 @@ const conversationsReducer = (state = initialState, action) => {
             imageAlt: action.payload.email,
             title: action.payload.email,
             createdAt: 'August 3',
+            is_active:1,
             latestMessageText: 'New Message',
             messages: []
         },)

@@ -37,12 +37,15 @@ var host = app.listen(port,()=>console.log(`Listening to the port ${port}`));
   
 
 const color = require("colors");
-const { get_Current_User, user_Disconnect, join_User,send_Msg_User,deactivate_Room,add_active_user } = require("./controller/SocketUserController");
+const { get_Current_User, user_Disconnect, join_User,send_Msg_User,deactivate_Room,add_active_user,get_reciever_user,get_active_user } = require("./controller/SocketUserController");
 const socket = require("socket.io");
 const io = socket(host);
-
+setTimeout(() => {
+  
+// console.log('------------io',io)
 //initializing the socket io connection 
 io.on("connection", (socket) => {
+  console.log('-----------------Start Connection of the socket IO')
   //for a new user joining the room
   socket.on("joinRoom", ({ username, roomname }) => {
     //* create user
@@ -67,24 +70,34 @@ io.on("connection", (socket) => {
   });
 
   //user sending message
-  socket.on("chat", (text) => {
+  socket.on("chat", (user) => {
     //gets the room user and the message sent
-    const p_user = get_Current_User(socket.id);
+    console.log('chat----------------------------->',user)
 
-    io.to(p_user.room).emit("message", {
+    const p_user = get_reciever_user(user.email);
+    console.log('chat---------------------------->',p_user);
+
+if(p_user!=null){
+    io.to(p_user.id).emit("message", {
       userId: p_user.id,
       username: p_user.username,
-      text: text,
+      room: user.room,
+      text: user.text,
     });
+  }
   });
+ 
+
+
 
   socket.on("add_active_user", (email) => {
+    console.log('---------------------------------------Active User Start',email);
     //gets the room user and the message sent
-    const active_user = add_active_user(socket.id, email);
-    
+    const active_user = add_active_user(socket.id, email.email);
+    console.log('---------------------------------------Active Users',active_user);
   });
-
-    
+                                                                  
+       
 
   //user sending message
   socket.on("active_room", (user) => { 
@@ -121,8 +134,8 @@ io.on("connection", (socket) => {
       console.log('----------------------------------chat1')
       console.log(p_user);
       p_user.map((user) => {
-      
-        io.to(user.id).emit("message", {
+       const active_user_id= get_active_user(user.username)
+        io.to(active_user_id).emit("message", {
           userId: user.id,
           username: user.username,
           room: user.room,
@@ -149,9 +162,10 @@ io.on("connection", (socket) => {
     }
   });
 
-  socket.on("deactivate_room", (id) => {
+  socket.on("deactivate_room", () => {
     //the user is deleted from array of users and a left room message displayed
-    deactivate_Room(id);
+    deactivate_Room(socket.id);
 
   });
 });
+}, 1000);

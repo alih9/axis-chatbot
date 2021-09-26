@@ -28,6 +28,9 @@ module.exports = {
       last_message_update_at: {
         type:Sequelize.DATE
       },
+      deleted_at: {
+        type:Sequelize.DATE
+      },
       last_message: {
         type: Sequelize.STRING
       },

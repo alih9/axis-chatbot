@@ -10,12 +10,13 @@ import { useParams } from "react-router-dom";
 
 // Get ID from URL
 
-// const socket = io.connect('/');
-const socket = io(process.env.REACT_APP_NODE_API);
+const socket = io.connect('/');
+// const socket = io(process.env.REACT_APP_NODE_API);
 const axios = require('axios')
 
 function ChatBox(props) {
   const [user, setuser] = useState({})
+  const [tenant, settenant] = useState({})
   const [room, setRoom] = useState({})
   const [email, setemail] = useState('')
   const [roomParticipant, setRoomParticipant] = useState({})
@@ -48,27 +49,28 @@ const handleSubscribeForm = async (name,email) => {
   setemail(email)
     // const URL='http://localhost:5000/api/userdata'
     const NODE_API = process.env.REACT_APP_NODE_API
-    const URL = `${NODE_API}/api/getuserdetails`
-    // alert(URL)
+    var URL = `${NODE_API}/api/getuserdetails`
+    // // alert(URL)
     const AuthStr='Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTYyNTk5MTMwNywiZXhwIjoxNjI2MDc3NzA3fQ.rtQZNlGvIxkdFvlXJjU-ddIhBjXkpAEz7_x2O9bcLcE';
   
-    await axios({
-      method: 'post',
-      url: URL,
-      headers: {
-        'Content-Type': 'application/json',
-        'authorization': AuthStr 
-      },
-      data: {  tenant_id:params.id },
-      })
-      .then((data) => {
-        console.log(data.tenant.email);
-       
-       })
-      .catch((error) =>
-      {
-    console.error('Error:', error);
-      });
+    // await axios({
+    //   method: 'post',
+    //   url: URL,
+    //   headers: {
+    //     'Content-Type': 'application/json',
+    //     'authorization': AuthStr 
+    //   },
+    //   data: {  tenant_id:params.id },
+    //   })
+    //   .then((data) => {
+    //     console.log(data.tenant.email);
+    //     alert(JSON.stringify(data.tenant))
+    //     settenant(data.tenant);
+    //    })
+    //   .catch((error) =>
+    //   {
+    // console.error('Error:', error);
+    //   });
 
   
 
@@ -85,6 +87,8 @@ const handleSubscribeForm = async (name,email) => {
   })
     .then((data) => {
       console.log(data.data.chattingRoom.room.id);
+      // alert(JSON.stringify(data.data.chattingRoom.tenant))
+      settenant(data.data.chattingRoom.tenant);
       socket.emit("joinRoom", { username: email, roomname: data.data.chattingRoom.room.id })
       socket.emit("active_room", { username: email, roomname: data.data.chattingRoom.room.id })
 
@@ -126,7 +130,8 @@ const handleSubscribeForm = async (name,email) => {
   
  
   const handleNewUserMessage = async (message) => {
-    socket.emit("chat1", message);
+    // socket.emit("chat1", message);
+    socket.emit("chat", {text:message,email:tenant.email,room:room.id});
     const NODE_API = process.env.REACT_APP_NODE_API
     const URL = `${NODE_API}/api/customerchatting`
     const now = new Date();

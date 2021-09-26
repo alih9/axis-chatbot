@@ -14,13 +14,9 @@ import LogoutButton from '../../components/util/LogoutButton';
 import {useAuth0  } from "@auth0/auth0-react";
 import './ChatShell.scss';
 
-import io from "socket.io-client";
-
-const socket = io(process.env.REACT_APP_NODE_API);
-const ChatShell = ({ conversations,user, selectedConversation,messageDetails, conversationChanged, onMessageSubmitted, onMessageUpdate, sendMessage, onDeleteConversation, loadConversations, updateConversation, deletedAddedConversation,updateConversationDateMessage }) =>
+const ChatShell = ({ conversations,user,socket, selectedConversation,messageDetails, conversationChanged, onMessageSubmitted, onMessageUpdate, sendMessage, onDeleteConversation, loadConversations, updateConversation, deletedAddedConversation,updateConversationDateMessage }) =>
 {
     const { isAuthenticated } = useAuth0();
-    const [is_active, setis_active] = React.useState(true);
     const [conversationRender, setconversationRender] = useState(false)
     useEffect(() => {
         loadConversations();
@@ -40,9 +36,9 @@ const ChatShell = ({ conversations,user, selectedConversation,messageDetails, co
                 var time = dates.format(today, 'hh:mm:ss ');
                 date = today.toLocaleString();
                 time = "";
-                onMessageUpdate(data.room, data.text, false, null, false, date, time)
+                onMessageUpdate(data.room, data.text, true, null, false, date, time)
                 time = date;
-                
+                // alert(JSON.stringify(data))
                 updateConversationDateMessage(data.room, data.text, date, time)
                 setTimeout(updateConversationDateMessage(data.room, data.text, date, time),500)
                 
@@ -56,10 +52,7 @@ const ChatShell = ({ conversations,user, selectedConversation,messageDetails, co
 
         });
         
-        if (is_active) {
-            socket.emit("add_active_user", { email: user.email})
-            setis_active(false)
-        }
+     
 
     }, [socket])
      
@@ -86,8 +79,9 @@ const ChatShell = ({ conversations,user, selectedConversation,messageDetails, co
         socket.emit("disconect");
     }
 
-    const SendLiveMessage = (message) => {
-           socket.emit("chat1", message);
+    const SendLiveMessage = (message,conversationId) => {
+        socket.emit("chat", {text:message,email:selectedConversation.title,room:conversationId});
+        //    socket.emit("chat1", message);
     }
     
     let conversationContent = (
@@ -138,6 +132,7 @@ const ChatShell = ({ conversations,user, selectedConversation,messageDetails, co
                 selectedConversation={selectedConversation}
                 onDeleteConversation={onDeleteConversation}
                 socket={socket}
+                user={user}
             />
             {conversationContent}
             <ChatForm 

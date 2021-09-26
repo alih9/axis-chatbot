@@ -19,6 +19,7 @@ module.exports = (sequelize, DataTypes) => {
     tenant_id: DataTypes.INTEGER,
     last_message_update_at: DataTypes.DATE,
     last_message: DataTypes.STRING,
+    deleted_at: DataTypes.DATE,
   }, {
     sequelize,
     modelName: 'Chat_room',

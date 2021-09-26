@@ -1,5 +1,5 @@
 import { put, takeEvery ,takeLatest} from 'redux-saga/effects';
-import dates from 'date-and-time';
+import date from 'date-and-time';
 import { messagesLoaded } from '../actions';
 import { select } from 'redux-saga/effects'; 
 const delay = (ms) => new Promise(res => setTimeout(res, ms));
@@ -79,6 +79,7 @@ const getConversations = async (email) => {
                     imageAlt: `${result.chatRoom.room_name}`,
                     title: `${result.chatRoom.room_name}`,
                     createdAt: `${currentDate}`,
+                    is_active:`${result.chatRoom.is_active}`,
                     latestMessageText: `${result.chatRoom.last_message}`,
                     messages: []
                 }
@@ -90,7 +91,22 @@ const getConversations = async (email) => {
             console.error('Error:', error);
         });
 }
-
+export const deleteConversations =async(id)=>{
+// alert(id)
+    const NODE_API = process.env.REACT_APP_NODE_API
+    const URL = `${NODE_API}/api/deleteconversation`
+    const now = new Date();
+    var currentDate=date.format(now, 'YYYY-MM-DD hh:mm:ss'); 
+    // currentDate = now.toGMTString();
+    // alert(myDate.toLocaleString());
+    const AuthStr='Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTYyNTk5MTMwNywiZXhwIjoxNjI2MDc3NzA3fQ.rtQZNlGvIxkdFvlXJjU-ddIhBjXkpAEz7_x2O9bcLcE';
+  await fetch({method: 'post',url: URL,headers: {'Content-Type': 'application/json','authorization': AuthStr },
+    data: {  chat_room:id,timestamp:now },
+  }).then(data => {
+    //   console.log(data); 
+      alert(JSON.stringify(data))  
+})
+}
 
 export const conversationsSaga = function* () {
     const getToken = (state) => state.usersState;
@@ -132,4 +148,24 @@ export const conversationsRenderSaga = function* (action) {
 
 export const  watchRenderConversationsAsync =function* (){
     yield takeLatest('CONVERSATIONS_RENDER_REQUESTED', conversationsRenderSaga);
+}
+
+
+
+export const conversationDelete = function* () {
+    // console.log(action)
+    // conversations = action.payload.conversations;
+    // const sconverstion = action.payload.selectedConversation;
+    const getConversationState = (state) => state.conversationState;
+    const conversationState = yield select(getConversationState);
+    yield(deleteConversations(conversationState.selectedConversation.id))
+    
+    yield delay(1000);
+   yield put({
+        type: 'DELETE_CONVERSATION'
+    });
+}
+
+export const  DeletedConversation =function* (){
+    yield takeLatest('DELETE_CONVERSATION_PROCEED', conversationDelete);
 }

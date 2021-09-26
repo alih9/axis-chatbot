@@ -15,7 +15,7 @@ export const conversationsRenderRequested = (conversations,selectedConversation)
 
 
 export const conversationDeleted = () => ({
-    type: 'DELETE_CONVERSATION'
+    type: 'DELETE_CONVERSATION_PROCEED'
 });
 
 export const newMessageAdded = (textMessage, date, time) => ({

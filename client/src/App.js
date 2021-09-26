@@ -4,12 +4,20 @@ import ChatShell from './containers/shell/ChatShell';
 import Loading from './components/util/Loading';
 import { connect } from 'react-redux';
 import { updatedUserCredential } from './store/actions';
+
+
+import io from "socket.io-client";
+
+// const socket = io(process.env.REACT_APP_NODE_API);
+
+const socket = io.connect('/');
 const App = ({ updatedUserCredential}) => {
 
   const { user, isAuthenticated } = useAuth0();
+  const [is_active, setis_active] = React.useState(true);
   // alert(JSON.stringify(user));
   // console.log(user)
-  updatedUserCredential(user);
+  updatedUserCredential(user); 
   const userlogin = async(user) => {
    
     const NODE_API=process.env.REACT_APP_NODE_API
@@ -35,12 +43,19 @@ const App = ({ updatedUserCredential}) => {
   
 
   userlogin(user);
+
+  React.useEffect(()=>{
+    
+      socket.emit("add_active_user", { email: user.email})
+  
+  },[])
+  
   return (
     <>
       {/* {!isAuthenticated && <LoginButton />}
       {isAuthenticated && <ChatShell /> } */}
 
-      <ChatShell />
+      <ChatShell socket={socket}/>
       </>
   );
 }

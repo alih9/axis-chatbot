@@ -18,7 +18,6 @@ module.exports = (sequelize, DataTypes) => {
     name: DataTypes.STRING,
     email: DataTypes.STRING,
     is_tenant: DataTypes.INTEGER,
-    requestIsActive: DataTypes.INTEGER,
   }, {
     sequelize,
     modelName: 'user',

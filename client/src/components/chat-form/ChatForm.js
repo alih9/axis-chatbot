@@ -58,7 +58,7 @@ const ChatForm = ({ user, selectedConversation, onMessageSubmitted, onMessageUpd
                     const conversationId = selectedConversation.id;
                    
                     onMessageUpdate(conversationId, textMessage, messageDetails[conversationId].hasMoreMessages, messageDetails[conversationId].lastMessageId, true, date , time)
-                    SendLiveMessage(textMessage);
+                    SendLiveMessage(textMessage,conversationId);
                     const email = user.email;
                     sendmsg(conversationId, textMessage, email, currentDate , time);
                     setdisableButton(true);

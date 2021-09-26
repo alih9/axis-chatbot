@@ -23,6 +23,10 @@ router
   .post('/checkuseractivation', UserController.check_user_activation)
   .post('/existuser', UserController.existence_user)  
   .post('/getuserdetails', UserController.get_user_details)
+  .post('/deactivateuserroom', UserController.deactivate_user_room)
+  .post('/deleteconversation', UserController.delete_conversation)
+
+  
   
   .get('/test',(req,res)=>{res.send({message:'testing'})})
 
