@@ -70,9 +70,13 @@ const conversationsReducer = (state = initialState, action) => {
             const existingState = { ...state };
             const newState = existingState;
             const { conversationId ,time ,email} = action.payload;
+                                                                  
+            alert(conversationId)
+
             let selectedConversationIndex = newState.conversations.findIndex(c => c.id === conversationId);
+            console.log('selectedConversationIndex',selectedConversationIndex)
             newState.conversations.splice(selectedConversationIndex, 1);
-    
+            console.log('State',newState)
                                          
           newState.conversations.unshift( {
             id: conversationId,

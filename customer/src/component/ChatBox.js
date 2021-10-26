@@ -5,16 +5,15 @@ import React, { useEffect,useState} from 'react';
 import Form from './Form'
 import date from 'date-and-time';
 import message from './message';
-import io from "socket.io-client";
-import { useParams } from "react-router-dom";
+
+// import { useParams } from "react-router-dom";
 
 // Get ID from URL
 
-const socket = io.connect('/');
 // const socket = io(process.env.REACT_APP_NODE_API);
 const axios = require('axios')
 
-function ChatBox(props) {
+function ChatBox({socket,_id}) {
   const [user, setuser] = useState({})
   const [tenant, settenant] = useState({})
   const [room, setRoom] = useState({})
@@ -23,7 +22,7 @@ function ChatBox(props) {
   const [parent_message_id, setParent_message_id] = useState(0);
   const [AllMsg, setAllMsg] = useState([])
   
-  const params = useParams();
+  // const params = useParams();
   useEffect(() => {
     toggleInputDisabled();
     renderCustomComponent(Form, { handleSubscribeForm });
@@ -84,14 +83,15 @@ const handleSubscribeForm = async (name,email) => {
       'Content-Type': 'application/json',
       'authorization': AuthStr 
     },
-    data: {  name: name, email: email ,tenant_id:params.id, last_message_update_at:currentDate,last_message:"New Message" },
+    data: {  name: name, email: email ,tenant_id:_id, last_message_update_at:currentDate,last_message:"New Message" },
   })
     .then((data) => {
       console.log(data.data.chattingRoom.room.id);
-      // alert(JSON.stringify(data.data.chattingRoom.tenant))
+      alert(JSON.stringify(data.data.chattingRoom.tenant))
       settenant(data.data.chattingRoom.tenant);
       socket.emit("joinRoom", { username: email, roomname: data.data.chattingRoom.room.id })
-      socket.emit("active_room", { username: email, roomname: data.data.chattingRoom.room.id })
+      socket.emit("add_active_user", { email: email})
+      socket.emit("active_room", {tenant:data.data.chattingRoom.tenant.email, username: email, roomname: data.data.chattingRoom.room.id })
 
        dropMessages()
       setRoom(data.data.chattingRoom.room)
@@ -160,9 +160,7 @@ const handleSubscribeForm = async (name,email) => {
 
   
   return (
-    <Widget
-      
-      handleNewUserMessage={handleNewUserMessage}
+    <Widget handleNewUserMessage={handleNewUserMessage}
       showTimeStamp={false}
     title="Axis Chatbot"
     subtitle="Welcome to axis chatbot"

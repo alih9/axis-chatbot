@@ -45,12 +45,23 @@ setTimeout(() => {
 // console.log('------------io',io)
 //initializing the socket io connection 
 io.on("connection", (socket) => {
-  console.log('-----------------Start Connection of the socket IO')
+  console.log('----------------->Start the Connection of the socket IO')
+
+
+  socket.on("add_active_user", async(email) => {
+    console.log(`----------------->Add active User ${email.email}`)
+    
+    //gets the room user and the message sent
+    const active_user = await add_active_user(socket.id, email.email);
+    console.log('----------------->Added Active User',active_user);
+  });
+      
   //for a new user joining the room
-  socket.on("joinRoom", ({ username, roomname }) => {
+  socket.on("joinRoom", async({ username, roomname }) => {
+    
     //* create user
-    const p_user = join_User(socket.id, username, roomname);
-    console.log(socket.id, "=id");
+    console.log(`----------------->User ${username} joining the room ${roomname}`)
+    const p_user =await join_User(username, roomname);
     socket.join(p_user.room);
     
     //display a welcome message to the user who have joined a room
@@ -69,20 +80,43 @@ io.on("connection", (socket) => {
     // });
   });
 
+
+
+    //user sending message
+    socket.on("active_room", async(user) => {
+      //gets the room user and the message sent
+    console.log('--------------------------------------user ---->check',user)
+      
+      const p_user =await get_Current_User(user.tenant);
+      if (p_user) {
+        console.log('--------------------------------------Add active ROOM executed')
+        io.to(p_user.id).emit("add_active_room", {
+          userId: p_user.id,
+          username: user.username,
+          room: user.roomname,
+        });
+    
+      }
+      else {
+      console.log('User not Active')
+      }
+    });
+
+
+
+
+
   //user sending message
-  socket.on("chat", (user) => {
+  socket.on("chat", async(user) => {
     //gets the room user and the message sent
-    console.log('chat----------------------------->',user)
-
-    const p_user = get_reciever_user(user.email);
-    console.log('chat---------------------------->',p_user);
-
-if(p_user!=null){
-    io.to(p_user.id).emit("message", {
-      userId: p_user.id,
-      username: p_user.username,
-      room: user.room,
-      text: user.text,
+    console.log('Chatting----------------------------->',user)
+    const activeuser =await get_reciever_user(user.email);
+    if(activeuser!=null){
+      io.to(activeuser.id).emit("message", {
+        userId: activeuser.id,
+        username: activeuser.username,
+        room: user.room,
+        text: user.text,
     });
   }
   });
@@ -90,64 +124,47 @@ if(p_user!=null){
 
 
 
-  socket.on("add_active_user", (email) => {
-    console.log('---------------------------------------Active User Start',email);
-    //gets the room user and the message sent
-    const active_user = add_active_user(socket.id, email.email);
-    console.log('---------------------------------------Active Users',active_user);
-  });
-                                                                  
+                                                            
        
 
-  //user sending message
-  socket.on("active_room", (user) => { 
-    //gets the room user and the message sent
-    const p_user = get_Current_User(socket.id);
-    if (p_user) {
-      console.log('--------------------------------------Add active ROOM executed')
-      io.emit("add_active_room", {
-        userId: p_user.id,
-        username: p_user.username,
-        room: user.roomname,
-      });
-  
-    }
-    else {
-    console.log('User not Active')
-    }
-  });
+
+
+
+
 
   socket.on('error', (error) => {
     console.log(error);
   });    
 
-  socket.on("chat1", (text) => {
-    //gets the room user and the message sent
-    // console.log(socket)
-    const p_user = send_Msg_User(socket.id);
-    if (p_user == null) {
-      console.log('User Not available')
-    }
 
-    else {
+
+  // socket.on("chat1", (text) => {//gets the room user and the message sent
+  //   const p_user = send_Msg_User(socket.id);
+  //   if (p_user == null) {
+  //     console.log('User Not available')
+  //   }
+
+  //   else {
       
-      console.log('----------------------------------chat1')
-      console.log(p_user);
-      p_user.map((user) => {
-       const active_user_id= get_active_user(user.username)
-        io.to(active_user_id).emit("message", {
-          userId: user.id,
-          username: user.username,
-          room: user.room,
-          text: text,
-        });
-        console.log('Send to only User')
-        console.log(user)
-      })
-      
-    }
-  
-  });
+  //     console.log('----------------------------------chat1')
+  //     console.log(p_user);
+  //     p_user.map((user) => {
+  //      const active_user_id= get_active_user(user.username)
+  //       io.to(active_user_id).emit("message", {
+  //         userId: user.id,
+  //         username: user.username,
+  //         room: user.room,
+  //         text: text,
+  //       });
+  //       console.log('Send to only User')
+  //       console.log(user)
+  //     })
+  //   }
+  // });
+
+
+
+
   //when the user exits the room
   socket.on("disconect", () => {
     //the user is deleted from array of users and a left room message displayed
