@@ -33,7 +33,7 @@ app.get('/', (req, res) => {
 const port = process.env.PORT;
 console.log(process.env.PORT)
 var host = app.listen(port,()=>console.log(`Listening to the port ${port}`));
-
+  	
   
 
 const color = require("colors");
@@ -186,3 +186,6 @@ io.on("connection", (socket) => {
   });
 });
 }, 1000);
+
+
+// https://gist.github.com/ywwwtseng/63c36ccb58a25a09f7096bbb602ac1de
