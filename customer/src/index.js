@@ -8,7 +8,7 @@ import io from "socket.io-client";
 // const socket = io.connect('/');
 const socket = io(process.env.REACT_APP_NODE_API);
 // import { BrowserRouter as  Router,Route, Switch } from "react-router-dom";
-
+// const socket = openSocket('http://localhost:4000', , {transports: ['websocket']});
 // var socket = io({transports: ['websocket'], upgrade: false}).connect('/');
 ReactDOM.render(
   //    <Router>
