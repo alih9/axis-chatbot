@@ -18,6 +18,7 @@ router
   .post('/userdata', UserController.customer_chatting_registration)
   .post('/customerchatting', UserController.customer_chatting)
   .post('/show_all_user_chat', UserController.show_all_chat_users)
+  .post('/show_all_archive_user_chat', UserController.show_all_archive_chat_users)
   .post('/getmessage', UserController.get_messages)
   .post('/tenantchatting', UserController.tenant_chatting)
   .post('/checkuseractivation', UserController.check_user_activation)

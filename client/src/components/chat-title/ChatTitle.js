@@ -30,8 +30,8 @@ const ChatTitle = ({ selectedConversation, onDeleteConversation,socket,user }) =
     };
     const handleClickDeactivate = async() => {
       
-      socket.emit('deactivate_room')
-
+      socket.emit('deactivate_room',{room_id:selectedConversation.id})
+alert("yo")
       const NODE_API = process.env.REACT_APP_NODE_API
       const URL = `${NODE_API}/api/deactivateuserroom`
       const AuthStr='Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTYyNTk5MTMwNywiZXhwIjoxNjI2MDc3NzA3fQ.rtQZNlGvIxkdFvlXJjU-ddIhBjXkpAEz7_x2O9bcLcE';
@@ -152,14 +152,14 @@ const StyledMenuItem = withStyles((theme) => ({
      <DialogTitle id="alert-dialog-title">{"Deactivation Room?"}</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            Are Sure you want to Deactivate the Room?
+            Sure, you want to Deactivate the Room?
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClickClose} color="primary">
+          <Button onClick={handleClickClose} >
             Disagree
           </Button>
-          <Button onClick={handleClickDeactivate} color="warning" autoFocus>
+          <Button onClick={handleClickDeactivate}  autoFocus>
             Agree
           </Button>
         </DialogActions> </>}

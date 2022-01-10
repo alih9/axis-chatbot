@@ -15,8 +15,10 @@ const axios = require('axios')
 
 function ChatBox({socket,_id}) {
   const [user, setuser] = useState({})
-  const [tenant, settenant] = useState({})
+  const [tenant, settenant] = useState(null)
   const [room, setRoom] = useState({})
+  const [roomId, setRoomId] = useState({})
+  
   const [email, setemail] = useState('')
   const [roomParticipant, setRoomParticipant] = useState({})
   const [parent_message_id, setParent_message_id] = useState(0);
@@ -37,10 +39,21 @@ function ChatBox({socket,_id}) {
 
   useEffect(() => {
     socket.on("message", (data) => {
+      if( data.room==room.id)
+      {
       addResponseMessage(data.text)
+      }
     });
-  }, [socket]);
+  }, [socket,roomId]);
   
+  useEffect(()=>{
+socket.on("deactivate_chat",()=>{
+  alert("deactivate")
+  dropMessages()
+  toggleInputDisabled();
+  renderCustomComponent(Form, { handleSubscribeForm });
+})
+  },[socket])
 
 
 const handleSubscribeForm = async (name,email) => {
@@ -94,7 +107,9 @@ const handleSubscribeForm = async (name,email) => {
       socket.emit("active_room", {tenant:data.data.chattingRoom.tenant.email, username: email, roomname: data.data.chattingRoom.room.id })
 
        dropMessages()
+       alert(JSON.stringify(data.data.chattingRoom.room))
       setRoom(data.data.chattingRoom.room)
+      setRoomId(data.data.chattingRoom.room.id)
       setRoomParticipant(data.data.chattingRoom.roomParticipant)
       setuser(data.data.chattingRoom.user)
       console.log(data.data.chattingRoom)
@@ -117,6 +132,7 @@ const handleSubscribeForm = async (name,email) => {
       else {
         setParent_message_id(0)
       }
+      
       const room_number = data.data.chattingRoom.room.id;
        const msg = `Allocated Room Number #${room_number}`;
        renderCustomComponent(message, { message:msg });
@@ -134,6 +150,7 @@ const handleSubscribeForm = async (name,email) => {
  
   const handleNewUserMessage = async (message) => {
     // socket.emit("chat1", message);
+    alert(JSON.stringify(roomId))
     socket.emit("chat", {text:message,email:tenant.email,room:room.id});
     const NODE_API = process.env.REACT_APP_NODE_API
     const URL = `${NODE_API}/api/customerchatting`

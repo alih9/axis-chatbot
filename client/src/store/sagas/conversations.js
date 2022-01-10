@@ -55,9 +55,18 @@ const getactiveroom = async (chatRoom_id) => {
 }
 
 
-const getConversations = async (email) => {
+const getConversations = async (email,payload) => {
     const NODE_API=process.env.REACT_APP_NODE_API
-    const URL=`${NODE_API}/api/show_all_user_chat`
+    let URL;
+    if(payload.payload.type=="inbox")
+    {
+        URL=`${NODE_API}/api/show_all_user_chat`
+    }
+    else if(payload.payload.type=="archive")
+    {
+        URL=`${NODE_API}/api/show_all_archive_user_chat`
+    }
+ 
     await fetch(URL, { 
         method: 'POST',
                 headers: {
@@ -111,10 +120,10 @@ export const deleteConversations =async(id)=>{
 })
 }
 
-export const conversationsSaga = function* () {
+export const conversationsSaga = function* (type) {
     const getToken = (state) => state.usersState;
     const token = yield select(getToken);
-    yield(getConversations(token.userDetails.email))
+    yield(getConversations(token.userDetails.email,type))
     yield delay(1000);
     // yield (getactiveroom())
     yield delay(1000);

@@ -3,7 +3,7 @@ import classNames from 'classnames';
 
 import './ConversationItem.scss';
 
-const ConversationItem = ({ conversation, isActive, onConversationItemSelected,joinRoom, disconnect }) => {
+const ConversationItem = ({ conversation, isActive, onConversationItemSelected,joinRoom, disconnect ,socket}) => {
     const className = classNames('conversation', {
         'active': isActive
     });
@@ -12,7 +12,7 @@ const ConversationItem = ({ conversation, isActive, onConversationItemSelected,j
          width: "10px  !important"
     }
     return (
-        <div className={className} onClick={() => { onConversationItemSelected(conversation.id); disconnect(conversation.id); joinRoom(conversation.id) } }>
+        <div className={className} onClick={() => { onConversationItemSelected(conversation.id); disconnect(conversation.id); joinRoom(conversation.id); socket.emit('')  } }>
             <img src={conversation.imageUrl} alt={conversation.imageAlt} />
          {conversation.isactive &&   <img style={{  height: "10px", width: "10px",position: "fixed" }}  src={'/images/green_dot.png'} />}
                

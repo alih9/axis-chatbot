@@ -8,11 +8,11 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      id: {
-        type: Sequelize.STRING
-      },
       email: {
         type: Sequelize.STRING
+      },
+      room_id: {
+        type: Sequelize.INTEGER
       },
       createdAt: {
         allowNull: false,

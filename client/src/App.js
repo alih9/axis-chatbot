@@ -4,7 +4,7 @@ import ChatShell from './containers/shell/ChatShell';
 import Loading from './components/util/Loading';
 import { connect } from 'react-redux';
 import { updatedUserCredential } from './store/actions';
-
+import { BrowserRouter as  Router,Route, Switch } from "react-router-dom";
 
 import io from "socket.io-client";
 
@@ -55,7 +55,21 @@ const App = ({ updatedUserCredential}) => {
       {/* {!isAuthenticated && <LoginButton />}
       {isAuthenticated && <ChatShell /> } */}
 
-      <ChatShell socket={socket}/>
+
+    <Router>
+         <Switch>
+               <Route exact path="/"  >
+               <ChatShell socket={socket} type="inbox" />
+                 </Route>
+
+                 <Route exact path="/archive"  >
+               <ChatShell socket={socket} type="archive" />
+                 </Route>
+
+     </Switch>
+   </Router>,
+      {/* <ChatShell socket={socket}/> */}
+
       </>
   );
 }

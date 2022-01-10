@@ -17,7 +17,7 @@ const customer_chatting_registration = async(req, res) => {
     var parent_msg = '';
     var tenant_tmp=await Tenant.findOne({ where: {id:req.body.tenant_id} })
     var user=await User.findOne({ where: {email: req.body.email, tenant_id:req.body.tenant_id} })
-    // console.log(user)
+    console.log(user)
     if (user) {
         if (user.requestIsActive) {
             console.log('---------------------------------------Find Customer in Chat Registeration table');
@@ -42,17 +42,47 @@ const customer_chatting_registration = async(req, res) => {
                             console.log('-------------------------------end');
                             res.status(200).send({ chattingRoom: chattingRoom, success: true })
                         }
+                        else{
+
+                            console.log('-------------------------------chat room in active');
+                            let chatroom =await new ChatRoom({
+                                room_name: user.name,
+                                tenant_id:req.body.tenant_id,
+                                is_active: 1,
+                
+                            })
+                            await chatroom.save().then(async (room) => {
+                            const roomparticipation = new RoomParticipant({
+                            room_id: room.id,
+                            user_id: user.id,
+                            tenant_id:req.body.tenant_id,
+                            is_blocked: 0
+                            })
+                            await roomparticipation.save().then(participant => {
+                            chattingRoom = { user: user,tenant:tenant_tmp, room: room, roomParticipant: participant ,parent_msg:parent_msg};
+                    
+                            console.log('-------------------------------end');
+                            res.status(200).send({ chattingRoom: chattingRoom, success: true })
+                            }).catch(err => res.send({ message: (err.errors[0].message), success: false }));
+                            }).catch(err => res.send({ message: (err.errors[0].message), success: false }));
+           
+
+
+
+
                     }
 
-                })
-            } 
+                }
+            }) 
         }
+    }
         else {
             console.log('---------------------------------------Find non active Customer Chat');
            user= user.update(
                 { requestIsActive: 1 } 
             )
             .then(async(result) => {
+                console.log(result)
             let chatroom =await new ChatRoom({
                 room_name: user.name,
                 tenant_id:req.body.tenant_id,
@@ -107,7 +137,7 @@ const customer_chatting_registration = async(req, res) => {
                     is_blocked: 0
                 })
                await roomparticipation.save().then( async(participant) => {
-                     chattingRoom = { user: user,tenant:tenant_tmp, room: room, roomParticipant: participant ,parent_msg:parent_msg};
+                   chattingRoom = { user: user,tenant:tenant_tmp, room: room, roomParticipant: participant ,parent_msg:parent_msg};
                    
                    console.log('-------------------------------end');  
                    res.status(200).send({ chattingRoom: chattingRoom, success: true })
@@ -196,12 +226,12 @@ const show_all_chat_user = async (req,res) => {
         if (chatRoom) {
             // console.log('-------------------------------2');
             const roomparticipants = await RoomParticipant.findAll({
-                where: { room_id: chatRoom.id }
+                where: { room_id: chatRoom.id,is_active: 1}
             });
             
             for (let j = 0; j < roomparticipants.length; j++) {
                 console.log('-------------------------------3');
-                const u = await User.findOne({ where: { id: roomparticipants[j].user_id } });
+                const u = await User.findOne({ where: { id: roomparticipants[j].user_id, } });
                 user.push(u);
             }
             // console.log(chatRoom[i])
@@ -226,7 +256,7 @@ const show_all_chat_users = async (req,res) => {
     {
                 console.log(tenant_temp)
         const chatRoom = await ChatRoom.findAll({
-            where: { tenant_id: tenant_temp.id }
+            where: { tenant_id: tenant_temp.id ,is_active: 1}
         });
         
         console.log(chatRoom)
@@ -255,6 +285,43 @@ const show_all_chat_users = async (req,res) => {
   
 }
 
+const show_all_archive_chat_users = async (req,res) => {
+    console.log('-------------------------------start (show_all_archive_chat_users)');
+    var chat = [];
+    
+    const tenant_temp = await Tenant.findOne({ where: { email: req.body.email } });
+    if (tenant_temp)
+    {
+                console.log(tenant_temp)
+        const chatRoom = await ChatRoom.findAll({
+            where: { tenant_id: tenant_temp.id ,is_active: 0}
+        });
+        
+        console.log(chatRoom)
+        for (h = 0; h < chatRoom.length; h++) {
+        var user = [];
+        if (chatRoom) {
+            // console.log('-------------------------------2');
+            const roomparticipants = await RoomParticipant.findAll({
+                where: { room_id: chatRoom[h].id }
+            });
+            
+            for (let j = 0; j < roomparticipants.length; j++) {
+                console.log('-------------------------------3');
+                const u = await User.findOne({ where: { id: roomparticipants[j].user_id } });
+                user.push(u);
+            }
+            // console.log(chatRoom[i])
+            // console.log(roomparticipants)
+            // console.log(user)
+            chat.push({ chatRoom: chatRoom[h], roomparticipants: roomparticipants, user: user });
+        }
+        }
+    }
+    console.log('-------------------------------end');
+    res.status(200).send({ chat: chat,success:true })
+  
+}
 
 
 const get_messages = async (req, res) => {
@@ -452,4 +519,4 @@ catch(error){
     console.log(error)
 }
 }
-module.exports = { customer_chatting_registration ,customer_chatting,show_all_chat_user,get_messages,tenant_chatting , check_user_activation,existence_user,show_all_chat_users,get_user_details,deactivate_user_room,delete_conversation,customer_chatting_registration_v2} ;
+module.exports = {show_all_archive_chat_users, customer_chatting_registration ,customer_chatting,show_all_chat_user,get_messages,tenant_chatting , check_user_activation,existence_user,show_all_chat_users,get_user_details,deactivate_user_room,delete_conversation,customer_chatting_registration_v2} ;

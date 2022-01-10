@@ -37,12 +37,12 @@ var host = app.listen(port,()=>console.log(`Listening to the port ${port}`));
   
 
 const color = require("colors");
-const { get_Current_User, user_Disconnect, join_User,send_Msg_User,deactivate_Room,add_active_user,get_reciever_user,get_active_user } = require("./controller/SocketUserController");
+const {  get_user_socketid, join_user,deactivate_Room,deactivate_User,add_active_users } = require("./controller/SocketUserController");
 const socket = require("socket.io");
 const io = socket(host);
 setTimeout(() => {
   
-// console.log('------------io',io)
+
 //initializing the socket io connection 
 io.on("connection", (socket) => {
   console.log('----------------->Start the Connection of the socket IO')
@@ -52,7 +52,7 @@ io.on("connection", (socket) => {
     console.log(`----------------->Add active User ${email.email}`)
     
     //gets the room user and the message sent
-    const active_user = await add_active_user(socket.id, email.email);
+    const active_user = await add_active_users(socket.id, email.email,socket);
     console.log('----------------->Added Active User',active_user);
   });
       
@@ -61,8 +61,8 @@ io.on("connection", (socket) => {
     
     //* create user
     console.log(`----------------->User ${username} joining the room ${roomname}`)
-    const p_user =await join_User(username, roomname);
-    socket.join(p_user.room);
+    const p_user =await join_user(username, roomname);
+    socket.join(roomname);
     
     //display a welcome message to the user who have joined a room
     // socket.emit("message", {
@@ -87,11 +87,11 @@ io.on("connection", (socket) => {
       //gets the room user and the message sent
     console.log('--------------------------------------user ---->check',user)
       
-      const p_user =await get_Current_User(user.tenant);
+      const p_user =await get_user_socketid(user.tenant);
       if (p_user) {
         console.log('--------------------------------------Add active ROOM executed')
-        io.to(p_user.id).emit("add_active_room", {
-          userId: p_user.id,
+        io.to(p_user.socket_id).emit("add_active_room", {
+          userId: p_user.socket_id,
           username: user.username,
           room: user.roomname,
         });
@@ -103,18 +103,20 @@ io.on("connection", (socket) => {
     });
 
 
-
+    socket.on("chat", async(user) => {
+    })
 
 
   //user sending message
   socket.on("chat", async(user) => {
     //gets the room user and the message sent
     console.log('Chatting----------------------------->',user)
-    const activeuser =await get_reciever_user(user.email);
-    if(activeuser!=null){
-      io.to(activeuser.id).emit("message", {
-        userId: activeuser.id,
-        username: activeuser.username,
+    const activeuser =await get_user_socketid(user.email);
+    console.log('Sending message',activeuser)
+    if(activeuser){
+      socket.to(user.room).emit("message", {
+        userId: activeuser.socket_id,
+        username: activeuser.email,
         room: user.room,
         text: user.text,
     });
@@ -124,65 +126,31 @@ io.on("connection", (socket) => {
 
 
 
-                                                            
-       
-
-
-
-
-
-
   socket.on('error', (error) => {
     console.log(error);
   });    
 
 
 
-  // socket.on("chat1", (text) => {//gets the room user and the message sent
-  //   const p_user = send_Msg_User(socket.id);
-  //   if (p_user == null) {
-  //     console.log('User Not available')
-  //   }
-
-  //   else {
-      
-  //     console.log('----------------------------------chat1')
-  //     console.log(p_user);
-  //     p_user.map((user) => {
-  //      const active_user_id= get_active_user(user.username)
-  //       io.to(active_user_id).emit("message", {
-  //         userId: user.id,
-  //         username: user.username,
-  //         room: user.room,
-  //         text: text,
-  //       });
-  //       console.log('Send to only User')
-  //       console.log(user)
-  //     })
-  //   }
-  // });
-
-
-
-
   //when the user exits the room
   socket.on("disconect", () => {
     //the user is deleted from array of users and a left room message displayed
-    const p_user = user_Disconnect(socket.id);
+    // const p_user = deactivate_User(socket.id);
 
-    if (p_user) {
+    // if (p_user) {
       // io.to(p_user.room).emit("message", {
       //   userId: p_user.id,
       //   username: p_user.username,
       //   text: `${p_user.username} has left the room`,
       // });
-    }
+    // }
   });
 
   socket.on("deactivate_room", () => {
     //the user is deleted from array of users and a left room message displayed
-    deactivate_Room(socket.id);
-
+    // deactivate_User(socket.id);
+    console.log('deactivate_roomdeactivate_roomdeactivate_roomdeactivate_roomdeactivate_room')
+socket.emit("deactivate_chat",()=>{})
   });
 });
 }, 1000);

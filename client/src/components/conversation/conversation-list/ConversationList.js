@@ -3,7 +3,7 @@ import React from 'react';
 import ConversationItem from '../conversation-item/ConversationItem';
 import './ConversationList.scss';
 
-const ConversationList = ({ conversations, selectedConversation, onConversationItemSelected,joinRoom, disconnect,conversationRender,setconversationRender }) => {
+const ConversationList = ({ conversations, selectedConversation, onConversationItemSelected,joinRoom, disconnect,conversationRender,setconversationRender,socket }) => {
     
     React.useEffect(() => {
         console.log('---------------conversation Changed', conversations)
@@ -21,6 +21,7 @@ const ConversationList = ({ conversations, selectedConversation, onConversationI
         return <ConversationItem 
             key={ conversation.id }
             onConversationItemSelected={onConversationItemSelected}
+            socket={socket}
             joinRoom={joinRoom}
             disconnect={disconnect}
             isActive={ conversationIsActive }

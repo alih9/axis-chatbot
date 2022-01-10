@@ -17,19 +17,21 @@ import './ChatShell.scss';
 
 
 
-const ChatShell = ({ conversations,user,socket, selectedConversation,messageDetails, conversationChanged, onMessageSubmitted, onMessageUpdate, sendMessage, onDeleteConversation, loadConversations, updateConversation, deletedAddedConversation,updateConversationDateMessage }) =>
+const ChatShell = ({ type,conversations,user,socket, selectedConversation,messageDetails, conversationChanged, onMessageSubmitted, onMessageUpdate, sendMessage, onDeleteConversation, loadConversations, updateConversation, deletedAddedConversation,updateConversationDateMessage }) =>
 {
     const { isAuthenticated } = useAuth0();
     const [conversationRender, setconversationRender] = useState(false)
     useEffect(() => {
-        loadConversations();
+        loadConversations(type);
     }, [loadConversations]);
 
  
     useEffect(() => {
+        console.log('type',type)
         socket.on("message", (data) => {
-            console.log('-------------------------------------Data undefined',data)
+            console.log('-------------------------------------Message Recieved',data)
            
+        
             
                 var today = new Date();
                 var date = dates.format(today, 'DD/MM/YYYY');
@@ -40,8 +42,7 @@ const ChatShell = ({ conversations,user,socket, selectedConversation,messageDeta
                 onMessageUpdate(data.room, data.text, true, null, false, date, time)
                 updateConversationDateMessage(data.room, data.text, date, time)
   
-                // console.log()
-                // alert(JSON.stringify(data))
+            
             
         });
     
@@ -111,6 +112,7 @@ const ChatShell = ({ conversations,user,socket, selectedConversation,messageDeta
             {searchList && <ConversationList
                 onConversationItemSelected={conversationChanged}
                 joinRoom={joinRoom}
+                socket={socket}
                 disconnect={disconnect}
                 conversations={newsearchList}
                 selectedConversation={selectedConversation}
@@ -120,6 +122,7 @@ const ChatShell = ({ conversations,user,socket, selectedConversation,messageDeta
             {!searchList && <ConversationList
                 onConversationItemSelected={conversationChanged}
                 joinRoom={joinRoom}
+                socket={socket}
                 disconnect={disconnect}
                 conversations={conversations}
                 selectedConversation={selectedConversation}
@@ -170,7 +173,7 @@ const mapDispatchToProps = dispatch => ({
     updateConversation: (conversationId, email,time) => { dispatch(updateConversation(conversationId, email,time)) },
     deletedAddedConversation: (conversationId) => { dispatch(deletedAddedConversation(conversationId)) },
     onDeleteConversation: () => { dispatch(conversationDeleted()); },
-    loadConversations: () => { dispatch(conversationsRequested())},
+    loadConversations: (type) => { dispatch(conversationsRequested(type))},
     updateConversationDateMessage: (conversationId, messages, date , time) => { dispatch(updateConversationDateMessage(conversationId, messages, date , time)) },
 });
 

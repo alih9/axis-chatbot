@@ -31,9 +31,7 @@ const conversationsReducer = (state = initialState, action) => {
         }
       case 'SELECTED_CONVERSATION_CHANGED': {
         const newState = { ...state };
-        newState.selectedConversation = 
-            newState.conversations.find(conversation => conversation.id === action.conversationId
-            );
+        newState.selectedConversation =  newState.conversations.find(conversation => conversation.id === action.conversationId);
 
         return newState;
         }

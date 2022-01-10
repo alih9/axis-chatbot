@@ -3,8 +3,9 @@ export const conversationChanged = conversationId => ({
     conversationId
 });
 
-export const conversationsRequested = () => ({
-    type: 'CONVERSATIONS_REQUESTED'
+export const conversationsRequested = (type) => ({
+    type: 'CONVERSATIONS_REQUESTED',
+    payload: {  type }
 });
 
 export const conversationsRenderRequested = (conversations,selectedConversation) => ({
