@@ -41,13 +41,15 @@ const App = ({ updatedUserCredential}) => {
     
   }
   
-
-  userlogin(user);
-
-  React.useEffect(()=>{
-    
-      socket.emit("add_active_user", { email: user.email})
+const addTenant=async()=>{
+await  userlogin(user);
+await  socket.emit("add_active_user", { email: user.email})
   
+}
+  
+  React.useEffect(()=>{
+    addTenant()
+   
   },[])
   
   return (
