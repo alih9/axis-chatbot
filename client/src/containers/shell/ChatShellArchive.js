@@ -1,69 +1,68 @@
 import React, { useEffect,useState } from 'react';
 import { connect } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import dates from 'date-and-time';
 import { conversationChanged, newMessageAdded, conversationDeleted, conversationsRequested ,updateMessagesDetails, sendMessage, updateConversation, deletedAddedConversation, updateConversationDateMessage} from '../../store/actions';
 import ConversationSearch from '../../components/conversation/conversation-search/ConversationSearch';
 import NoConversations from '../../components/conversation/no-conversations/NoConversations';
-import ConversationList from '../../components/conversation/conversation-list/ConversationList';
+import ConversationListArchive from '../../components/conversation/conversation-list/ConversationListArchive';
 import NewConversation from '../../components/conversation/new-conversation/NewConversation';
-import ChatTitle from '../../components/chat-title/ChatTitle';
+import ChatTitleArchive from '../../components/chat-title/ChatTitle';
 import MessageList from '../message/MessageList';
-import ChatForm from '../../components/chat-form/ChatForm';
+import ChatFormArchive from '../../components/chat-form/ChatFormArchive';
 import LogoutButton from '../../components/util/LogoutButton';
 import { toast } from 'react-toastify';
-import {useAuth0  } from "@auth0/auth0-react";
+import {useAuth0, withAuthenticationRequired} from "@auth0/auth0-react";
+import { updatedUserCredential } from '../../store/actions';
 import {nowtime} from '../../utility/datetime';
+import Loading from '../../components/util/Loading';
 import './ChatShell.scss';
 
-
-
-const ChatShell = ({ type,conversations,user,socket, selectedConversation,messageDetails, conversationChanged, onMessageSubmitted, onMessageUpdate, sendMessage, onDeleteConversation, loadConversations, updateConversation, deletedAddedConversation,updateConversationDateMessage }) =>
+const ChatShellArchive = ({ type, conversations, selectedConversation, messageDetails, conversationChanged, onMessageSubmitted, onMessageUpdate, sendMessage, onDeleteConversation, loadConversations, updateConversation, deletedAddedConversation,updateConversationDateMessage, updatedUserCredential }) => 
 {
-    const { isAuthenticated } = useAuth0();
+    //Authentication Code
+    const { user, isAuthenticated } = useAuth0();
+
+    useEffect(()=>{
+        updatedUserCredential(user); 
+    },[]);
+    const userlogin = async(user) => {
+        
+        const NODE_API=process.env.REACT_APP_NODE_API
+        const URL=`${NODE_API}/api/existuser`
+        await fetch(URL, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            // 'authorization': AuthStr 
+        },
+        body: JSON.stringify({ 'user': user })
+        })
+        .then(response => response.json())
+        .then((data) => {
+            //  alert(JSON.stringify(data));
+        })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+
+        
+    }
+
+    userlogin(user);
+    
     const [conversationRender, setconversationRender] = useState(false)
     useEffect(() => {
         loadConversations(type);
     }, [loadConversations]);
-
- 
-    useEffect(() => {
-        socket.on("message", (data) => {
-            console.log('-------------------------------------Message Recieved',data)
-           
-        
-            
-                var today = new Date();
-                var date = dates.format(today, 'DD/MM/YYYY');
-                date = today.toLocaleString();
-                var time = nowtime();
-                date="";
-                toast.success(data.text, {position: "bottom-right",autoClose: 2000,hideProgressBar: false, closeOnClick: true, });
-                onMessageUpdate(data.room, data.text, true, null, false, date, time)
-                updateConversationDateMessage(data.room, data.text, date, time)
-  
-            
-            
-        });
-    
-        socket.on("add_active_room", (data) => {
-            console.log("Socket Add Active Room Event Invoked");
-            // deletedAddedConversation(data.room)
-            var time = nowtime();
-            updateConversation(data.room, data.username ,time) 
-            setconversationRender(true)
-               
-        });
-
-     
-
-    }, [socket])
-     
+    useEffect(()=>{
+        console.log("Conversations use Effect Hook invoked");
+        console.log(conversations);
+    }, [conversations]);
     const [searchConversation, setsearchConversation] = React.useState('')
     const [searchList, setsearchList] = React.useState(false)
     const [newsearchList, setnewSearchList] = React.useState(false)
-   
-   
-    
+
     useEffect(() => {
         setnewSearchList(conversations.filter((n)=>  n.title.includes(searchConversation) ))
         if (searchConversation.length > 0) {
@@ -73,19 +72,8 @@ const ChatShell = ({ type,conversations,user,socket, selectedConversation,messag
             setsearchList(false)
         }
     }, [searchConversation])
-    
-    const joinRoom = (conversationId) => {
-        socket.emit("joinRoom", { username: user.email, roomname: conversationId })
-    }
-    const disconnect = (conversationId) => {
-        socket.emit("disconect");
-    }
 
-    const SendLiveMessage = (message,conversationId) => {
-        socket.emit("chat", {text:message,email:selectedConversation.title,room:conversationId});
-        //    socket.emit("chat1", message);
-    }
-    
+
     let conversationContent = (
         <>
             <NoConversations></NoConversations>
@@ -100,6 +88,7 @@ const ChatShell = ({ type,conversations,user,socket, selectedConversation,messag
         );
     }
 
+
     return (
         <>                    
           {isAuthenticated? <LogoutButton/> : '' }
@@ -109,51 +98,45 @@ const ChatShell = ({ type,conversations,user,socket, selectedConversation,messag
                 setsearchConversation={setsearchConversation}
                 conversations={conversations}
             />
-            {searchList && <ConversationList
+            {searchList && <ConversationListArchive
                 onConversationItemSelected={conversationChanged}
-                joinRoom={joinRoom}
-                socket={socket}
-                disconnect={disconnect}
                 conversations={newsearchList}
                 selectedConversation={selectedConversation}
                 conversationRender={conversationRender}
                 setconversationRender={setconversationRender} />}
 
-            {!searchList && <ConversationList
+            {!searchList && <ConversationListArchive
                 onConversationItemSelected={conversationChanged}
-                joinRoom={joinRoom}
-                socket={socket}
-                disconnect={disconnect}
                 conversations={conversations}
                 selectedConversation={selectedConversation}
                 conversationRender={conversationRender}
                 setconversationRender={setconversationRender} />}
 
             
-            
-            <NewConversation />
-            <ChatTitle 
+    
+            {/* <NewConversation /> */}
+            <ChatTitleArchive 
                 selectedConversation={selectedConversation}
                 onDeleteConversation={onDeleteConversation}
-                socket={socket}
                 user={user}
             />
             {conversationContent}
-            <ChatForm 
+            <ChatFormArchive
                 selectedConversation={selectedConversation}
                 user={user}
                 onMessageSubmitted={onMessageSubmitted}
                 onMessageUpdate={onMessageUpdate}
                 messageDetails={messageDetails}
                 sendMessage={sendMessage}
-                SendLiveMessage={SendLiveMessage}
                 updateConversationDateMessage={updateConversationDateMessage}
             />
             </div>
             </>
     );
+
+
 }
-        
+
 const mapStateToProps = state => {
     return {
         conversations: state.conversationState.conversations,
@@ -161,8 +144,7 @@ const mapStateToProps = state => {
         selectedConversation: state.conversationState.selectedConversation,
         messageDetails: state.messagesState.messageDetails
     };
-};    
-  
+};   
 
 
 const mapDispatchToProps = dispatch => ({
@@ -175,9 +157,10 @@ const mapDispatchToProps = dispatch => ({
     onDeleteConversation: () => { dispatch(conversationDeleted()); },
     loadConversations: (type) => { dispatch(conversationsRequested(type))},
     updateConversationDateMessage: (conversationId, messages, date , time) => { dispatch(updateConversationDateMessage(conversationId, messages, date , time)) },
+    updatedUserCredential: user => dispatch(updatedUserCredential(user)),
 });
 
 export default connect(
     mapStateToProps,
     mapDispatchToProps
-)(ChatShell);
+)(withAuthenticationRequired(ChatShellArchive, {onRedirecting: () => <Loading />,}));

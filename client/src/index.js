@@ -11,6 +11,7 @@ import './index.scss';
 import rootSaga from './store/sagas';
 import rootReducer from './store/reducers';
 import App from './App';
+import ChatShellArchive from './containers/shell/ChatShellArchive';
 import Auth0Provider from "./auth0-provide";
 const sagaMiddleware = createSagaMiddleware();
 const composeEnhancers =  typeof window === 'object' && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ ?   
@@ -25,7 +26,8 @@ ReactDOM.render(
         <Router>
             <Auth0Provider>
                 <Switch>
-                    <Route path="/" component={App} />
+                    <Route exact path="/" component={App} />
+                    <Route exact path="/archive" component={()=> <ChatShellArchive type={"archive"}/>} />    
                 </Switch>  
                 <ToastContainer autoClose={2000} />
             </Auth0Provider>
