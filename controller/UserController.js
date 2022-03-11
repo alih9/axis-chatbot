@@ -28,28 +28,26 @@ const customer_chatting_registration = async(req, res) => {
                     const chat_room = await ChatRoom.findOne({ where: { id: rp.room_id } })
                     if (chat_room) {
                         console.log(chat_room);
-                        if (chat_room.is_active) {
-                                                                                                                             
+                        if (chat_room.is_active) 
+                        {                                                                                                     
                            const msg= await Message.max('parent_message_id', {where : {'room_id': chat_room.id }})
                             const allMsg= await Message.findAll({where : {'room_id': chat_room.id },order: [['createdAt', 'ASC']]})
-                            if (msg) {
+                            if (msg) 
+                            {
                                 parent_msg = msg;
                             }
-
                             console.log(msg)
                             chattingRoom = { user:user,tenant:tenant_tmp, room:chat_room ,roomParticipant:rp,parent_msg:parent_msg,allMsg:allMsg};
-                            
                             console.log('-------------------------------end');
                             res.status(200).send({ chattingRoom: chattingRoom, success: true })
                         }
-                        else{
-
+                        else
+                        {
                             console.log('-------------------------------chat room in active');
                             let chatroom =await new ChatRoom({
                                 room_name: user.name,
                                 tenant_id:req.body.tenant_id,
                                 is_active: 1,
-                
                             })
                             await chatroom.save().then(async (room) => {
                             const roomparticipation = new RoomParticipant({
@@ -63,14 +61,10 @@ const customer_chatting_registration = async(req, res) => {
                     
                             console.log('-------------------------------end');
                             res.status(200).send({ chattingRoom: chattingRoom, success: true })
-                            }).catch(err => res.send({ message: (err.errors[0].message), success: false }));
-                            }).catch(err => res.send({ message: (err.errors[0].message), success: false }));
+                            }).catch(err => res.send({ message: err, success: false }));
+                            }).catch(err => res.send({ message: err, success: false }));
            
-
-
-
-
-                    }
+                        }
 
                 }
             }) 
@@ -78,23 +72,25 @@ const customer_chatting_registration = async(req, res) => {
     }
         else {
             console.log('---------------------------------------Find non active Customer Chat');
-           user= user.update(
+           user.update(
                 { requestIsActive: 1 } 
             )
             .then(async(result) => {
-                console.log(result)
+                console.log('-------------user')
+                console.log(user)
+
             let chatroom =await new ChatRoom({
+                
                 room_name: user.name,
                 tenant_id:req.body.tenant_id,
                 is_active: 1,
                 last_message:req.body.last_message,
                 last_message_update_at:req.body.last_message_update_at,
-            
             })
                await chatroom.save().then(async (room) => {
                const roomparticipation = new RoomParticipant({
                     room_id: room.id,
-                   user_id: user.id,
+                    user_id: user.id,
                     tenant_id:req.body.tenant_id,
                     is_blocked: 0
                 })
@@ -103,12 +99,12 @@ const customer_chatting_registration = async(req, res) => {
                     
                     console.log('-------------------------------end');
                     res.status(200).send({ chattingRoom: chattingRoom, success: true })
-                }).catch(err => res.send({ message: (err.errors[0].message), success: false }));
-               }).catch(err => res.send({ message: (err.errors[0].message), success: false }));
+                }).catch(err => res.send({ message: err, success: false }));
+               }).catch(err => res.send({ message: err, success: false }));
             })
             .catch(error => {
               // error handling
-              res.send({ message: (err.errors[0].message), success: false })
+              res.send({ message: error, success: false })
             })  
         }
     }
@@ -197,7 +193,7 @@ const customer_chatting = async (req, res) => {
             var chat_room_update = await ChatRoom.findOne({ where: { id: req.body.room_id } })
             await chat_room_update.update({ last_message: req.body.message,last_message_update_at:req.body.date })
             
-        }).catch(err => res.send({ message: (err.errors[0].message), success: false }));
+        }).catch(err => res.send({ message: err, success: false }));
     
      
     res.status(200).send({ message: msg_ack, success: true })
@@ -422,7 +418,7 @@ const tenant_chatting = async (req, res) => {
             var chat_room_update = await ChatRoom.findOne({ where: { id: req.body.room_id } })
             await chat_room_update.update({ last_message: req.body.message,last_message_update_at:req.body.date })
             
-        }).catch(err => res.send({ message: (err.errors[0].message), success: false }));
+        }).catch(err => res.send({ message: err, success: false }));
     
      
     res.status(200).send({ message: msg_ack, success: true })
@@ -457,8 +453,18 @@ console.log(req.body)
         })
 
     }
- 
-    res.status(200).send({ tenant: tenant,success:true })
+
+    var user = await User.findOne({ where: { email: req.body.user.email } })
+   
+    if (!user) {
+     user=   await User.create({
+            name: req.body.user['https://axis.doneforyou.com/user_metadata'].name,
+            email: req.body.user.email,
+            tenant_id:tenant.id,
+            requestIsActive: 1,
+        })
+    }
+    res.status(200).send({ tenant: tenant,success:true ,user:user})
 
 }
 
@@ -487,15 +493,9 @@ const deactivate_user_room = async (req, res) => {
             var chat_room = await ChatRoom.findOne({ where: { id: req.body.chat_room } })
             chat_room.update( { is_active: 0 }  )
             await chat_room.save().then(()=>{
-
                 res.status(200).send({ chat_room: chat_room,user:user, success: true })
             })
-
-
-
          })
-
-     
     }
     catch (error) {
     console.log(error)

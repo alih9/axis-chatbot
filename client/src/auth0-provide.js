@@ -3,9 +3,8 @@ import { useHistory } from "react-router-dom";
 import { Auth0Provider } from "@auth0/auth0-react";
 
 const Auth0ProviderWithHistory = ({ children }) => {
-  const domain = 'siddiquenu.auth0.com';
-  const clientId = 'nkmYjUnWhf3gRatsgWnRsZArycOWg12i';
-  // alert(domain);
+  const domain = `${process.env.REACT_APP_AUTH0_DOMAIN}` 
+  const clientId =`${process.env.REACT_APP_CLIENT_ID}` 
   const history = useHistory();
 
   const onRedirectCallback = (appState) => {
