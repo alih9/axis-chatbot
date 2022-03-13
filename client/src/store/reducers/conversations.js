@@ -73,7 +73,8 @@ const conversationsReducer = (state = initialState, action) => {
 
             let selectedConversationIndex = newState.conversations.findIndex(c => c.id === conversationId);
             console.log('selectedConversationIndex',selectedConversationIndex)
-            newState.conversations.splice(selectedConversationIndex, 1);
+            if(selectedConversationIndex != -1)
+                newState.conversations.splice(selectedConversationIndex, 1);
             console.log('State',newState)
                                          
           newState.conversations.unshift( {

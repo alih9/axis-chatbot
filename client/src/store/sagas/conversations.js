@@ -116,11 +116,12 @@ export const deleteConversations =async(id)=>{
     data: {  chat_room:id,timestamp:now },
   }).then(data => {
     //   console.log(data); 
-      alert(JSON.stringify(data))  
+      //alert(JSON.stringify(data))  
 })
 }
 
 export const conversationsSaga = function* (type) {
+    console.log(type);
     const getToken = (state) => state.usersState;
     const token = yield select(getToken);
     yield(getConversations(token.userDetails.email,type))

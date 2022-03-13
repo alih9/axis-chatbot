@@ -54,25 +54,14 @@ await  socket.emit("add_active_user", { email: user.email})
   
   return (
     <>
-      {/* {!isAuthenticated && <LoginButton />}
-      {isAuthenticated && <ChatShell /> } */}
-
-
-    <Router>
-         <Switch>
-               <Route exact path="/"  >
-               <ChatShell socket={socket} type="inbox" />
-                 </Route>
-
-                 <Route exact path="/archive"  >
-               <ChatShell socket={socket} type="archive" />
-                 </Route>
-
-     </Switch>
-   </Router>,
-      {/* <ChatShell socket={socket}/> */}
-
-      </>
+      <Router>
+        <Switch>
+          <Route exact path="/"  >
+            <ChatShell socket={socket} type="inbox" />
+          </Route>
+        </Switch>
+      </Router>
+    </>
   );
 }
 

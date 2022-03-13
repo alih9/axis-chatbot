@@ -6,7 +6,7 @@ const User = db.user;
 const Tenant = db.tenant;
 const Message = db.Message;
 const ChatRoom = db.Chat_room;
-const RoomParticipant = db.room_participants;
+const RoomParticipant = db.room_participants;   
 
 
 
@@ -485,7 +485,8 @@ const deactivate_user_room = async (req, res) => {
     try {
         
         var tenant = await Tenant.findOne({ where: { email: req.body.tenant_email } })
-        var user = await User.findOne({ where: { tenant_id: tenant.id,email:req.body.email } })
+        var user_id = (await RoomParticipant.findOne({where: {room_id: req.body.chat_room} })).user_id;
+        var user = await User.findOne({ where: { tenant_id: tenant.id,id:user_id } });
          user.update({ requestIsActive: 0 }  )
        await  user.save().then(async()=>{ 
 
