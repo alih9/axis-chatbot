@@ -444,9 +444,9 @@ console.log(req.body)
     
     if (!tenant) {
         tenant = await Tenant.create({
-            name: req.body.user['https://axis.doneforyou.com/user_metadata'].name ,
-            first_name: req.body.user['https://axis.doneforyou.com/user_metadata'].first_name,
-            last_name: req.body.user['https://axis.doneforyou.com/user_metadata'].last_name,
+            name: req.body.user[process.env.AUTH0_USER_METADATA].name ,
+            first_name: req.body.user[process.env.AUTH0_USER_METADATA].first_name,
+            last_name: req.body.user[process.env.AUTH0_USER_METADATA].last_name,
             sub: req.body.user.sub,
             email: req.body.user.email,
      
@@ -458,7 +458,7 @@ console.log(req.body)
    
     if (!user) {
      user=   await User.create({
-            name: req.body.user['https://axis.doneforyou.com/user_metadata'].name,
+            name: req.body.user[process.env.AUTH0_USER_METADATA].name,
             email: req.body.user.email,
             tenant_id:tenant.id,
             requestIsActive: 1,
