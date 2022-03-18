@@ -28,6 +28,14 @@ $speech-bubble-border-color: darken($accent-color, 13.18);
             font-size: 1.6rem;
             margin-bottom: 5px;
         }
+
+        > .message-dropdown {
+            display: inline;
+        }
+
+        >  .message-content {
+            display: none;
+        }
     }
 
     &.you-message {
@@ -42,6 +50,15 @@ $speech-bubble-border-color: darken($accent-color, 13.18);
                 border: 1px solid $primary-color;
                 border-radius: 14px 14px 0 14px;
             }
+
+            > .message-dropdown {
+                display: inline;
+            }
+    
+            > .message-dropdown-content {
+                display: none;
+            }
+
         }
     }
 

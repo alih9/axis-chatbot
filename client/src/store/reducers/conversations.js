@@ -1,6 +1,9 @@
+import { conversationDelete } from '../sagas/conversations';
+
 const initialState = {
     conversations: [],
-    selectedConversation: {}
+    selectedConversation: {},
+    isLoading: true
 };
 
 // initialState.selectedConversation = initialState.conversations[1];
@@ -8,10 +11,11 @@ const initialState = {
 const conversationsReducer = (state = initialState, action) => {
     switch (action.type) {
         case 'CONVERSATIONS_LOADED': {
-           
+            console.log(state);
             const newState = {
                 conversations: [],
-                selectedConversation: {}
+                selectedConversation: {},
+                isLoading: false
             }
             newState.conversations = action.payload.conversations ? action.payload.conversations : [];
             newState.selectedConversation = action.payload.selectedConversation;
@@ -60,7 +64,8 @@ const conversationsReducer = (state = initialState, action) => {
                 messages: updatedState.messages,
     
                } )
-               
+            console.log("Update Conversation action executed"); 
+            console.log(newState.conversations[0].latestMessageText);
                                                                                                                                                                
             return newState;
             }                
@@ -146,6 +151,14 @@ const conversationsReducer = (state = initialState, action) => {
 
           return state;
       }
+    //   case 'CONVERSATIONS_LOADING': {
+    //     console.log('INSIDE CONVERSATIONS LOADING');
+    //       var loadingState = state;
+    //       const newState = action.payload.conversationLoading;
+    //       loadingState.isLoading = newState;
+    //       console.log(loadingState);
+    //       return loadingState;
+    //   }
       default:
         return state;
     }

@@ -40,6 +40,7 @@ const userMessage = async (conversation_id,email) => {
 
 
                     return {
+                        msg_id: result.id,
                         id: result.parent_message_id,
                         imageUrl: require('../../images/profiles/user.png'),
                         imageAlt: result.email,
@@ -149,6 +150,16 @@ const sendmessagesSaga = function* (action) {
     
 }
 
+export const messageDelete = function*(action){
+    console.log("ACTION WORKING");
+    console.log(action.payload);
+    
+}
+
 export const watchSendMessagesAsync = function*() {
     yield takeLatest('SEND_MESSAGE', sendmessagesSaga);
+}
+
+export const DeletedMessage = function*(){
+    yield takeLatest('DELETE_MESSAGE_PROCEED',messageDelete);
 }

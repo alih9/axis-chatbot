@@ -13,10 +13,13 @@ export const conversationsRenderRequested = (conversations,selectedConversation)
     payload: {  selectedConversation }
 });
 
-
-
 export const conversationDeleted = () => ({
     type: 'DELETE_CONVERSATION_PROCEED'
+});
+
+export const messageDeleted = (message) => ({
+    type: 'DELETE_MESSAGE_PROCEED',
+    payload: { message }
 });
 
 export const newMessageAdded = (textMessage, date, time) => ({
@@ -34,7 +37,6 @@ export const messagesLoaded = (conversationId, messages, hasMoreMessages, lastMe
     type: 'MESSAGES_LOADED',
     payload: { conversationId, messages, hasMoreMessages, lastMessageId }
 });
-
 
 export const updateMessagesDetails = (conversationId, messages, hasMoreMessages, lastMessageId, isMyMessage, date,time) => ({
     type: 'UPDATED_MESSAGE_DETAIL',
@@ -60,10 +62,12 @@ export const deletedAddedConversation = (conversationId) => ({
     payload: { conversationId }
 });
 
-
-
 export const updatedUserCredential = (user) => ({
     type: 'UPDATED_USER_CREDENTIAL',
     payload: { user }
 });
 
+export const conversationsLoading = (conversationsLoading) =>({
+    type: 'CONVERSATIONS_LOADING',
+    payload: { conversationsLoading }
+});

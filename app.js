@@ -103,8 +103,7 @@ io.on("connection", (socket) => {
     });
 
 
-    socket.on("chat", async(user) => {
-    })
+
 
 
   //user sending message
