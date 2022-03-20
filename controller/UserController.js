@@ -259,9 +259,9 @@ const show_all_chat_users = async (req,res) => {
     const tenant_temp = await Tenant.findOne({ where: { email: req.body.email } });
     if (tenant_temp)
     {
-                console.log(tenant_temp)
+        console.log(tenant_temp)
         const chatRoom = await ChatRoom.findAll({
-            where: { tenant_id: tenant_temp.id ,is_active: 1}
+            where: { tenant_id: tenant_temp.id ,is_active: 1, deleted_at: null}
         });
         
         console.log(chatRoom)
@@ -529,4 +529,23 @@ catch(error){
     console.log(error)
 }
 }
-module.exports = {show_all_archive_chat_users, customer_chatting_registration ,customer_chatting,show_all_chat_user,get_messages,tenant_chatting , check_user_activation,existence_user,show_all_chat_users,get_user_details,deactivate_user_room,delete_conversation,customer_chatting_registration_v2} ;
+
+const delete_message=async(req,res)=>{
+    try{
+        console.log("Delete Message Body ----------------->(delete_message)",req.body);
+        var message = Message.findOne({where : {parent_message_id: req.body.parent_id, email: req.body.email}})
+        .then(
+            (msg)=>{
+                console.log(msg);
+            },
+            (err)=>{
+                console.log(err);
+            }
+            );
+        res.status(200).send("Message Deleted");
+    }
+    catch(error){
+        console.log(error);
+    }
+    }
+module.exports = {show_all_archive_chat_users, customer_chatting_registration ,customer_chatting,show_all_chat_user,get_messages,tenant_chatting , check_user_activation,existence_user,show_all_chat_users,get_user_details,deactivate_user_room,delete_conversation,delete_message,customer_chatting_registration_v2} ;

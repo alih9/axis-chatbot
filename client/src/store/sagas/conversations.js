@@ -66,7 +66,7 @@ const getConversations = async (email,payload) => {
     {
         URL=`${NODE_API}/api/show_all_archive_user_chat`
     }
- 
+
     await fetch(URL, { 
         method: 'POST',
                 headers: {
@@ -77,6 +77,7 @@ const getConversations = async (email,payload) => {
     })
     .then(response => response.json())
         .then(async(data) => {
+            console.log("Conversations Loading in Sage");
             let newConversations = data.chat.map((result) => {
                 // const user = result.user;
                 const now = new Date(result.chatRoom.last_message_update_at)
@@ -104,20 +105,29 @@ const getConversations = async (email,payload) => {
         });
 }
 export const deleteConversations =async(id)=>{
-// alert(id)
+
     const NODE_API = process.env.REACT_APP_NODE_API
     const URL = `${NODE_API}/api/deleteconversation`
     const now = new Date();
-    var currentDate=date.format(now, 'YYYY-MM-DD hh:mm:ss'); 
+    var currentDate=date.format(now, 'YYYY-MM-DD hh:mm:ss');
+    var data = {  chat_room:id,timestamp:now };
     // currentDate = now.toGMTString();
     // alert(myDate.toLocaleString());
     const AuthStr='Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTYyNTk5MTMwNywiZXhwIjoxNjI2MDc3NzA3fQ.rtQZNlGvIxkdFvlXJjU-ddIhBjXkpAEz7_x2O9bcLcE';
-  await fetch({method: 'post',url: URL,headers: {'Content-Type': 'application/json','authorization': AuthStr },
-    data: {  chat_room:id,timestamp:now },
-  }).then(data => {
-    //   console.log(data); 
-      //alert(JSON.stringify(data))  
-})
+    console.log("This is the URL delete post request is going to",data);
+    await fetch(URL,
+                    {
+                    method: 'post',
+                    headers: {'Content-Type': 'application/json','authorization': AuthStr },
+                    body: JSON.stringify(data),
+                    })
+                .then(data => {
+                        console.log(data); 
+                        //alert(JSON.stringify(data))  
+                })
+                .catch((err)=>
+                    console.log(err)
+                )
 }
 
 export const conversationsSaga = function* (type) {

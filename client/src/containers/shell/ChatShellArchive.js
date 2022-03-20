@@ -7,7 +7,7 @@ import ConversationSearch from '../../components/conversation/conversation-searc
 import NoConversations from '../../components/conversation/no-conversations/NoConversations';
 import ConversationListArchive from '../../components/conversation/conversation-list/ConversationListArchive';
 import NewConversation from '../../components/conversation/new-conversation/NewConversation';
-import ChatTitleArchive from '../../components/chat-title/ChatTitle';
+import ChatTitleArchive from '../../components/chat-title/ChatTitleArchive';
 import MessageList from '../message/MessageList';
 import ChatFormArchive from '../../components/chat-form/ChatFormArchive';
 import LogoutButton from '../../components/util/LogoutButton';
@@ -18,7 +18,7 @@ import {nowtime} from '../../utility/datetime';
 import Loading from '../../components/util/Loading';
 import './ChatShell.scss';
 
-const ChatShellArchive = ({ type, conversations, selectedConversation, messageDetails, conversationChanged, onMessageSubmitted, onMessageUpdate, sendMessage, onDeleteConversation, loadConversations, updateConversation, deletedAddedConversation,updateConversationDateMessage, updatedUserCredential }) => 
+const ChatShellArchive = ({ type, conversations, selectedConversation, messageDetails, conversationChanged, onMessageSubmitted, onMessageUpdate, sendMessage, onDeleteConversation, loadConversations, updateConversation, deletedAddedConversation,updateConversationDateMessage, updatedUserCredential, isLoading }) => 
 {
     //Authentication Code
     const { user, isAuthenticated } = useAuth0();
@@ -114,14 +114,18 @@ const ChatShellArchive = ({ type, conversations, selectedConversation, messageDe
 
             
     
-            {/* <NewConversation /> */}
-            <ChatTitleArchive 
-                selectedConversation={selectedConversation}
-                onDeleteConversation={onDeleteConversation}
-                user={user}
-            />
-            {conversationContent}
-            <ChatFormArchive
+            <NewConversation />
+            {isLoading ? 
+                <div id='loading-layout'><div id='loading-content'><Loading/></div></div> 
+            :
+            <>
+                <ChatTitleArchive 
+                    selectedConversation={selectedConversation}
+                    onDeleteConversation={onDeleteConversation}
+                    user={user}
+                />
+                {conversationContent}
+                <ChatFormArchive
                 selectedConversation={selectedConversation}
                 user={user}
                 onMessageSubmitted={onMessageSubmitted}
@@ -129,7 +133,9 @@ const ChatShellArchive = ({ type, conversations, selectedConversation, messageDe
                 messageDetails={messageDetails}
                 sendMessage={sendMessage}
                 updateConversationDateMessage={updateConversationDateMessage}
-            />
+                />  
+            </>
+            }
             </div>
             </>
     );
@@ -142,7 +148,8 @@ const mapStateToProps = state => {
         conversations: state.conversationState.conversations,
         user: state.usersState.userDetails,
         selectedConversation: state.conversationState.selectedConversation,
-        messageDetails: state.messagesState.messageDetails
+        messageDetails: state.messagesState.messageDetails,
+        isLoading: state.conversationState.isLoading
     };
 };   
 

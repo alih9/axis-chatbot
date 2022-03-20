@@ -82,8 +82,8 @@ const ChatTitleArchive =({ selectedConversation, onDeleteConversation, user }) =
                           
                           <span>
       
-                          <div>
-            <Button
+                          {/* <div> */}
+            {/* <Button
               aria-controls="customized-menu"
               aria-haspopup="true"
               variant="contained"
@@ -91,8 +91,8 @@ const ChatTitleArchive =({ selectedConversation, onDeleteConversation, user }) =
               onClick={handleClick}
             >
              Settings
-            </Button>
-            <StyledMenu
+            </Button> */}
+            {/* <StyledMenu
               id="customized-menu"
               anchorEl={anchorEl}
               keepMounted
@@ -109,7 +109,7 @@ const ChatTitleArchive =({ selectedConversation, onDeleteConversation, user }) =
               </StyledMenuItem>
               </div>
              
-              {/* <StyledMenuItem>
+              <StyledMenuItem>
                 <ListItemIcon>
                   <DraftsIcon fontSize="large" />
                 </ListItemIcon>
@@ -121,11 +121,11 @@ const ChatTitleArchive =({ selectedConversation, onDeleteConversation, user }) =
                   <SendIcon fontSize="large" />
                 </ListItemIcon>
                 <ListItemText primary="Inbox" />
-              </StyledMenuItem> */}
+              </StyledMenuItem>
               
-            </StyledMenu>
+            </StyledMenu> */}
       
-            <Dialog
+            {/* <Dialog
               open={open}
               onClose={handleClickClose}
               aria-labelledby="alert-dialog-title"
@@ -143,7 +143,7 @@ const ChatTitleArchive =({ selectedConversation, onDeleteConversation, user }) =
                 <Button onClick={handleClickClose} >
                   Disagree
                 </Button>
-                <Button onClick={}  autoFocus>
+                <Button onClick={handleClickDeactivate}  autoFocus>
                   Agree
                 </Button>
               </DialogActions> </>}
@@ -161,16 +161,16 @@ const ChatTitleArchive =({ selectedConversation, onDeleteConversation, user }) =
                
               </DialogActions> </>}
               
-            </Dialog>
+            </Dialog> */}
                                   
-          </div>
+          {/* </div> */}
       
                           </span>
                       </div>
                       
-                      <div onClick={ () => { setDelBox(true); } } title="Delete Conversation">
-                          <TrashIcon /> </div>
-                          <Dialog
+                      {/* <div onClick={ () => { setDelBox(true); } } title="Delete Conversation">
+                          <TrashIcon /> </div> */}
+                          {/* <Dialog
               open={delBox}
               onClose={delHandleClickClose}
               aria-labelledby="alert-dialog-title"
@@ -191,7 +191,7 @@ const ChatTitleArchive =({ selectedConversation, onDeleteConversation, user }) =
                   Deleted
                 </Button>
               </DialogActions> 
-              </Dialog>
+              </Dialog> */}
                      
                      
                   </>
