@@ -48,9 +48,10 @@ function ChatBox({socket,_id}) {
   
   useEffect(()=>{
 socket.on("deactivate_chat",()=>{
-  alert("deactivate")
+  // alert("deactivate")
   dropMessages()
   toggleInputDisabled();
+  renderCustomComponent(message, { message:"Your Query Has been resolved. If you have any other query you can resquest again" });
   renderCustomComponent(Form, { handleSubscribeForm });
 })
   },[socket])

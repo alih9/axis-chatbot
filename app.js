@@ -146,11 +146,11 @@ io.on("connection", (socket) => {
     // }
   });
 
-  socket.on("deactivate_room", () => {
+  socket.on("deactivate_room", (room) => {
     //the user is deleted from array of users and a left room message displayed
     // deactivate_User(socket.id);
     console.log('deactivate_roomdeactivate_roomdeactivate_roomdeactivate_roomdeactivate_room')
-socket.emit("deactivate_chat",()=>{})
+    socket.to(room.room_id).emit("deactivate_chat")
   });
 });
 }, 1000);

@@ -1,7 +1,7 @@
 import React, { useEffect,useState } from 'react';
 import { connect } from 'react-redux';
 import dates from 'date-and-time';
-import { conversationChanged, newMessageAdded, conversationDeleted, conversationsRequested ,updateMessagesDetails, sendMessage, updateConversation, deletedAddedConversation, updateConversationDateMessage} from '../../store/actions';
+import { conversationChanged, newMessageAdded, conversationDeleted, conversationsRequested ,updateMessagesDetails, sendMessage, updateConversation, deletedAddedConversation, updateConversationDateMessage,deleteSelectedConvsersation} from '../../store/actions';
 import ConversationSearch from '../../components/conversation/conversation-search/ConversationSearch';
 import NoConversations from '../../components/conversation/no-conversations/NoConversations';
 import ConversationList from '../../components/conversation/conversation-list/ConversationList';
@@ -17,7 +17,7 @@ import './ChatShell.scss';
 
 
 
-const ChatShell = ({ type,conversations,user,socket, selectedConversation,messageDetails, conversationChanged, onMessageSubmitted, onMessageUpdate, sendMessage, onDeleteConversation, loadConversations, updateConversation, deletedAddedConversation,updateConversationDateMessage }) =>
+const ChatShell = ({ type,conversations,user,socket, selectedConversation,messageDetails, conversationChanged, onMessageSubmitted, onMessageUpdate, sendMessage, onDeleteConversation, loadConversations, updateConversation, deletedAddedConversation,updateConversationDateMessage,deleteSelectedConvsersation }) =>
 {
     const { isAuthenticated } = useAuth0();
     const [conversationRender, setconversationRender] = useState(false)
@@ -135,6 +135,8 @@ const ChatShell = ({ type,conversations,user,socket, selectedConversation,messag
             <ChatTitle 
                 selectedConversation={selectedConversation}
                 onDeleteConversation={onDeleteConversation}
+                deletedAddedConversation={deletedAddedConversation}
+                deleteSelectedConvsersation={deleteSelectedConvsersation}
                 socket={socket}
                 user={user}
             />
@@ -173,6 +175,7 @@ const mapDispatchToProps = dispatch => ({
     updateConversation: (conversationId, email,time) => { dispatch(updateConversation(conversationId, email,time)) },
     deletedAddedConversation: (conversationId) => { dispatch(deletedAddedConversation(conversationId)) },
     onDeleteConversation: () => { dispatch(conversationDeleted()); },
+    deleteSelectedConvsersation:()=>{dispatch(deleteSelectedConvsersation());},
     loadConversations: (type) => { dispatch(conversationsRequested(type))},
     updateConversationDateMessage: (conversationId, messages, date , time) => { dispatch(updateConversationDateMessage(conversationId, messages, date , time)) },
 });

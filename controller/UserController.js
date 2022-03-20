@@ -21,11 +21,13 @@ const customer_chatting_registration = async(req, res) => {
     if (user) {
         if (user.requestIsActive) {
             console.log('---------------------------------------Find Customer in Chat Registeration table');
-            var RoomParticipants = await RoomParticipant.findAll({ where: { user_id: user.id } })
+            var RoomParticipants = await RoomParticipant.findAll({  limit: 1, where: { user_id: user.id }, order: [ [ 'createdAt', 'DESC' ]] })
             console.log(RoomParticipant)
             if (RoomParticipants) {
-                RoomParticipants.map(async (rp) => {
-                    const chat_room = await ChatRoom.findOne({ where: { id: rp.room_id } })
+                for(let i=0;i<RoomParticipants.length;i++)
+                // RoomParticipants.map(async (rp) => 
+                {
+                    const chat_room = await ChatRoom.findOne({ where: { id: RoomParticipants[i].room_id } })
                     if (chat_room) {
                         console.log(chat_room);
                         if (chat_room.is_active) 
@@ -36,10 +38,12 @@ const customer_chatting_registration = async(req, res) => {
                             {
                                 parent_msg = msg;
                             }
+
                             console.log(msg)
-                            chattingRoom = { user:user,tenant:tenant_tmp, room:chat_room ,roomParticipant:rp,parent_msg:parent_msg,allMsg:allMsg};
+                            chattingRoom = { user:user,tenant:tenant_tmp, room:chat_room ,roomParticipant:RoomParticipants[i],parent_msg:parent_msg,allMsg:allMsg};
                             console.log('-------------------------------end');
-                            res.status(200).send({ chattingRoom: chattingRoom, success: true })
+                            // return res.status(200).send({ chattingRoom: chattingRoom, success: true })
+                             
                         }
                         else
                         {
@@ -50,6 +54,7 @@ const customer_chatting_registration = async(req, res) => {
                                 is_active: 1,
                             })
                             await chatroom.save().then(async (room) => {
+                            console.log('-------------------------------Added new chat room in active');
                             const roomparticipation = new RoomParticipant({
                             room_id: room.id,
                             user_id: user.id,
@@ -60,15 +65,19 @@ const customer_chatting_registration = async(req, res) => {
                             chattingRoom = { user: user,tenant:tenant_tmp, room: room, roomParticipant: participant ,parent_msg:parent_msg};
                     
                             console.log('-------------------------------end');
-                            res.status(200).send({ chattingRoom: chattingRoom, success: true })
-                            }).catch(err => res.send({ message: err, success: false }));
+                            // return res.status(200).send({ chattingRoom: chattingRoom, success: true })
+                            }).catch(err =>  res.send({ message: err, success: false }));
                             }).catch(err => res.send({ message: err, success: false }));
            
                         }
 
                 }
-            }) 
+            }
+            return res.status(200).send({ chattingRoom: chattingRoom, success: true })
+
         }
+
+
     }
         else {
             console.log('---------------------------------------Find non active Customer Chat');
@@ -98,13 +107,13 @@ const customer_chatting_registration = async(req, res) => {
                     chattingRoom = { user: user,tenant:tenant_tmp, room: room, roomParticipant: participant ,parent_msg:parent_msg};
                     
                     console.log('-------------------------------end');
-                    res.status(200).send({ chattingRoom: chattingRoom, success: true })
-                }).catch(err => res.send({ message: err, success: false }));
-               }).catch(err => res.send({ message: err, success: false }));
+                    return res.status(200).send({ chattingRoom: chattingRoom, success: true })
+                }).catch(err => {  return res.send({ message: err, success: false })});
+               }).catch(err =>  {  return res.send({ message: err, success: false })});
             })
             .catch(error => {
               // error handling
-              res.send({ message: error, success: false })
+              return res.send({ message: error, success: false })
             })  
         }
     }
@@ -136,11 +145,11 @@ const customer_chatting_registration = async(req, res) => {
                    chattingRoom = { user: user,tenant:tenant_tmp, room: room, roomParticipant: participant ,parent_msg:parent_msg};
                    
                    console.log('-------------------------------end');  
-                   res.status(200).send({ chattingRoom: chattingRoom, success: true })
-                }).catch(err => res.send({ message: err, success: false, chat: 'room' }));
+                   return res.status(200).send({ chattingRoom: chattingRoom, success: true })
+                }).catch(err => {return res.send({ message: err, success: false, chat: 'room' })});
                
-            }).catch(err => { res.send({ message: err, success: false, chat: 'chat' });    });
-        }).catch(err => { console.log(err); res.send({ message: err, success: false, user: 'user' }); });
+            }).catch(err => { return res.send({ message: err, success: false, chat: 'chat' });    });
+        }).catch(err => { console.log(err); return res.send({ message: err, success: false, user: 'user' }); });
 
     }
 }
@@ -162,7 +171,7 @@ const customer_chatting_registration_v2=async(req,res)=>{
 
         })
                           
-       res.status(200).send({ user: user, success: true })
+        return res.status(200).send({ user: user, success: true })
 
 }
 
@@ -196,8 +205,8 @@ const customer_chatting = async (req, res) => {
         }).catch(err => res.send({ message: err, success: false }));
     
      
-    res.status(200).send({ message: msg_ack, success: true })
-    return msg_ack;
+        return res.status(200).send({ message: msg_ack, success: true })
+    // return msg_ack;
 }
 
 
@@ -238,7 +247,7 @@ const show_all_chat_user = async (req,res) => {
         }
     }
     console.log('-------------------------------end');
-    res.status(200).send({ chat: chat,success:true })
+    return res.status(200).send({ chat: chat,success:true })
   
 }
 
@@ -277,7 +286,7 @@ const show_all_chat_users = async (req,res) => {
         }
     }
     console.log('-------------------------------end');
-    res.status(200).send({ chat: chat,success:true })
+    return res.status(200).send({ chat: chat,success:true })
   
 }
 
@@ -315,7 +324,7 @@ const show_all_archive_chat_users = async (req,res) => {
         }
     }
     console.log('-------------------------------end');
-    res.status(200).send({ chat: chat,success:true })
+    return res.status(200).send({ chat: chat,success:true })
   
 }
 
@@ -382,7 +391,7 @@ const get_messages = async (req, res) => {
 
     if (msg) {
         console.log(`-------------------------------msg->${msg}`);
-        res.status(200).send({ msg: msg,success:true })
+        return res.status(200).send({ msg: msg,success:true })
     }
 
 }
@@ -421,8 +430,8 @@ const tenant_chatting = async (req, res) => {
         }).catch(err => res.send({ message: err, success: false }));
     
      
-    res.status(200).send({ message: msg_ack, success: true })
-    return msg_ack;
+        return res.status(200).send({ message: msg_ack, success: true })
+    // return msg_ack;
 }
 
 const check_user_activation = async (req,res) => {
@@ -431,7 +440,7 @@ const check_user_activation = async (req,res) => {
     if (room.length>0) {
         flag = true;
     }
-    res.status(200).send({ is_active: flag,room:room,success:true })
+    return res.status(200).send({ is_active: flag,room:room,success:true })
 }
 
 const existence_user = async (req, res) => {
@@ -464,7 +473,7 @@ console.log(req.body)
             requestIsActive: 1,
         })
     }
-    res.status(200).send({ tenant: tenant,success:true ,user:user})
+    return res.status(200).send({ tenant: tenant,success:true ,user:user})
 
 }
 
@@ -472,7 +481,7 @@ console.log(req.body)
 const get_user_details = async (req, res) => {
     try {
         var tenant = await Tenant.findOne({ where: { id: req.body.tenant_id } })
-        res.status(200).send({ tenant: tenant, success: true })
+        return res.status(200).send({ tenant: tenant, success: true })
     }
     catch (error) {
     console.log(error)
@@ -493,7 +502,7 @@ const deactivate_user_room = async (req, res) => {
             var chat_room = await ChatRoom.findOne({ where: { id: req.body.chat_room } })
             chat_room.update( { is_active: 0 }  )
             await chat_room.save().then(()=>{
-                res.status(200).send({ chat_room: chat_room,user:user, success: true })
+                return res.status(200).send({ chat_room: chat_room,user:user, success: true })
             })
          })
     }
@@ -511,7 +520,7 @@ try{
     chat_room.update( { deleted_at: req.body.timestamp }  )
     await chat_room.save().then(()=>{
 
-        res.status(200).send({ chat_room: chat_room, success: true })
+        return res.status(200).send({ chat_room: chat_room, success: true })
     })
 
 

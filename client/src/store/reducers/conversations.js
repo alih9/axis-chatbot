@@ -36,6 +36,12 @@ const conversationsReducer = (state = initialState, action) => {
         return newState;
         }
 
+        case 'SELECTED_CONVERSATION_DELETED': {
+            const newState = { ...state };
+            newState.selectedConversation =  {};
+            return newState;
+            }
+
             
         case 'UPDATE_CONVERSATION_DATE_MESSAGE': {
 
