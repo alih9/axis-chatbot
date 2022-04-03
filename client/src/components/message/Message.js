@@ -3,6 +3,8 @@ import classNames from 'classnames';
 import axios from 'axios';
 import './Message.scss';
 
+
+
 const Message = ({ isMyMessage, message, OnDeleteMessage }) => {
     const messageClass = classNames('message-row', {
         'you-message': isMyMessage,
@@ -33,9 +35,21 @@ const Message = ({ isMyMessage, message, OnDeleteMessage }) => {
     }       
     return (
         <div className={messageClass}>
+        
             <div className="message-content">
                 {imageThumbnail}
+                
                 <div className="message-text">
+                <div class="dropdown">
+  <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    >
+  </button>
+  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+    <a class="dropdown-item" href="#">Action</a>
+    <a class="dropdown-item" href="#">Another action</a>
+    <a class="dropdown-item" href="#">Something else here</a>
+  </div>
+</div>
                     {message.messageText}
                 </div>
                 <div className="message-dropdown">

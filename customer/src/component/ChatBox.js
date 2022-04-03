@@ -5,15 +5,17 @@ import React, { useEffect,useState} from 'react';
 import Form from './Form'
 import date from 'date-and-time';
 import message from './message';
+import { useLocation} from "react-router-dom";
+import  axios from 'axios'
 
-// import { useParams } from "react-router-dom";
 
-// Get ID from URL
+function useQuery() {
+  const { search } = useLocation();
+  return React.useMemo(() => new URLSearchParams(search), [search]);
+}
 
-// const socket = io(process.env.REACT_APP_NODE_API);
-const axios = require('axios')
 
-function ChatBox({socket,_id}) {
+function ChatBox({socket}) {
   const [user, setuser] = useState({})
   const [tenant, settenant] = useState(null)
   const [room, setRoom] = useState({})
@@ -24,17 +26,13 @@ function ChatBox({socket,_id}) {
   const [parent_message_id, setParent_message_id] = useState(0);
   const [AllMsg, setAllMsg] = useState([])
   
-  // const params = useParams();
+  let query = useQuery();
+  const tenant_id=query.get("tenant_id")
+
   useEffect(() => {
     toggleInputDisabled();
     renderCustomComponent(Form, { handleSubscribeForm });
-    // addUserMessage('umer')
   }, []);
-
-
-  useEffect(() => {
-    // alert(parent_message_id)
-  }, [parent_message_id]);
 
 
   useEffect(() => {
@@ -48,7 +46,6 @@ function ChatBox({socket,_id}) {
   
   useEffect(()=>{
 socket.on("deactivate_chat",()=>{
-  // alert("deactivate")
   dropMessages()
   toggleInputDisabled();
   renderCustomComponent(message, { message:"Your Query Has been resolved. If you have any other query you can resquest again" });
@@ -86,9 +83,7 @@ const handleSubscribeForm = async (name,email) => {
     //   });
     var today = new Date();
     var currentDate = today.toGMTString();
-  
 
-  
   URL = `${NODE_API}/api/userdata`;
   await axios({
     method: 'post',
@@ -97,7 +92,7 @@ const handleSubscribeForm = async (name,email) => {
       'Content-Type': 'application/json',
       'authorization': AuthStr 
     },
-    data: {  name: name, email: email ,tenant_id:_id, last_message_update_at:currentDate,last_message:"New Message" },
+    data: {  name: name, email: email ,tenant_id:tenant_id, last_message_update_at:currentDate,last_message:"New Message" },
   })
     .then((data) => {
       console.log(data.data.chattingRoom.room.id);
@@ -146,9 +141,6 @@ const handleSubscribeForm = async (name,email) => {
 });
   };
 
-
-  
- 
   const handleNewUserMessage = async (message) => {
     // socket.emit("chat1", message);
     alert(JSON.stringify(roomId))
@@ -158,7 +150,6 @@ const handleSubscribeForm = async (name,email) => {
     const now = new Date();
     var currentDate=date.format(now, 'YYYY-MM-DD hh:mm:ss'); 
     currentDate = now.toGMTString();
-    // alert(myDate.toLocaleString());
     const AuthStr='Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTYyNTk5MTMwNywiZXhwIjoxNjI2MDc3NzA3fQ.rtQZNlGvIxkdFvlXJjU-ddIhBjXkpAEz7_x2O9bcLcE';
     const i = parent_message_id + 1;
   setParent_message_id(i)
@@ -172,7 +163,6 @@ const handleSubscribeForm = async (name,email) => {
     data: {  message: message, user_id: user.id ,room_id:room.id,parent_message_id:i,date:currentDate ,email:email },
   }).then(data => {
        console.log(data.data);
-   
 })
   }
 

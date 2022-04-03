@@ -27,6 +27,7 @@ router
   .post('/deactivateuserroom', UserController.deactivate_user_room)
   .post('/deleteconversation', UserController.delete_conversation)
   .post('/deletemessage',UserController.delete_message)
+  .post('/gettenant',UserController.get_tenant_id)
 
   
   

@@ -105,7 +105,7 @@ const ChatShell = ({ type,conversations,user,socket, selectedConversation,messag
 
     return (
         <>                    
-          {isAuthenticated? <LogoutButton/> : '' }
+          {/* {isAuthenticated? <LogoutButton/> : '' } */}
         <div id="chat-container">
             <ConversationSearch
                 searchConversation={searchConversation}

@@ -548,4 +548,20 @@ const delete_message=async(req,res)=>{
         console.log(error);
     }
     }
-module.exports = {show_all_archive_chat_users, customer_chatting_registration ,customer_chatting,show_all_chat_user,get_messages,tenant_chatting , check_user_activation,existence_user,show_all_chat_users,get_user_details,deactivate_user_room,delete_conversation,delete_message,customer_chatting_registration_v2} ;
+
+
+const get_tenant_id=async(req,res)=>{
+    try
+    {
+        console.log("Get the tenant_id",req.body);
+        var tenant =await Tenant.findOne({where : { email: req.body.email}})
+        console.log(tenant)
+        res.status(200).json({message:"Tenant Id", tenant:tenant});
+    }
+    catch(error){
+        console.log(error);
+    }
+
+}
+
+module.exports = {show_all_archive_chat_users, customer_chatting_registration ,customer_chatting,show_all_chat_user,get_messages,tenant_chatting , check_user_activation,existence_user,show_all_chat_users,get_user_details,deactivate_user_room,delete_conversation,delete_message,customer_chatting_registration_v2,get_tenant_id} ;
