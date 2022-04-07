@@ -19,7 +19,7 @@ import {Modal} from 'react-bootstrap';
 
 import './ChatTitle.scss';
 
-const ChatTitle = ({ selectedConversation, onDeleteConversation,socket,user }) => {
+const ChatTitle = ({ selectedConversation, onDeleteConversation,deletedAddedConversation,deleteSelectedConvsersation,socket,user }) => {
     let chatTitleContents = null;
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [open, setOpen] = React.useState(false);
@@ -28,29 +28,41 @@ const ChatTitle = ({ selectedConversation, onDeleteConversation,socket,user }) =
 
     const handleClickOpen = () => {
       setOpen(true);
+      handleClose()
     };
+
     const handleClickDeactivate = async() => {
       
       socket.emit('deactivate_room',{room_id:selectedConversation.id})
-alert("yo")
       const NODE_API = process.env.REACT_APP_NODE_API
       const URL = `${NODE_API}/api/deactivateuserroom`
       const AuthStr='Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTYyNTk5MTMwNywiZXhwIjoxNjI2MDc3NzA3fQ.rtQZNlGvIxkdFvlXJjU-ddIhBjXkpAEz7_x2O9bcLcE';
      
-      await axios({method: 'post',url: URL, headers: {'Content-Type': 'application/json','authorization': AuthStr },
-      data: {  tenant_email:user.email,chat_room:selectedConversation.id,email:selectedConversation.title },
-    }).then(data => { 
-    alert(JSON.stringify(data))
-    })
+      await axios({
+        method: 'post',
+        url: URL,
+        headers: {'Content-Type': 'application/json','authorization': AuthStr },
+        data: {  tenant_email:user.email,chat_room:selectedConversation.id,email:selectedConversation.title },
+      })
+      .then(data =>
+      { 
+      deletedAddedConversation(selectedConversation.id)
+      deleteSelectedConvsersation()
+        // alert(JSON.stringify(data))
+      })
+      
+
       setOpen(false);
     };
 
     const delHandleClickClose=()=>{
-      setDelBox(false)
+      setDelBox(false);
+
     }
   
     const handleClickClose = () => {
       setOpen(false);
+     
     };
 
     const handleClick = (event) => {

@@ -67,6 +67,9 @@ export const updatedUserCredential = (user) => ({
     payload: { user }
 });
 
+export const deleteSelectedConvsersation=()=>({
+    type:'SELECTED_CONVERSATION_DELETED',
+})
 export const conversationsLoading = (conversationsLoading) =>({
     type: 'CONVERSATIONS_LOADING',
     payload: { conversationsLoading }

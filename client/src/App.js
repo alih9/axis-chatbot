@@ -49,7 +49,6 @@ await  socket.emit("add_active_user", { email: user.email})
   
   React.useEffect(()=>{
     addTenant()
-   
   },[])
   
   return (
@@ -64,9 +63,6 @@ await  socket.emit("add_active_user", { email: user.email})
     </>
   );
 }
-
-
-
 
 
 const mapStateToProps = state => {
