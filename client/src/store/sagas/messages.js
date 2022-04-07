@@ -1,4 +1,4 @@
-import { put, takeLatest } from 'redux-saga/effects';
+import { put, take, takeLatest } from 'redux-saga/effects';
 import { select } from 'redux-saga/effects'; 
 import { messagesLoaded } from '../actions';
 import {datetimeformat} from '../../utility/datetime'
@@ -22,6 +22,7 @@ const userMessage = async (conversation_id,email) => {
     const URL=`${NODE_API}/api/getmessage`
     // const token = Cookies.get('token');
     // const AuthStr='Bearer '+token;
+    // console.log(conversation_id,email);
         await fetch(URL, {
             method: 'POST',
             headers: {
@@ -41,6 +42,7 @@ const userMessage = async (conversation_id,email) => {
 
                     return {
                         msg_id: result.id,
+                        room_id: result.room_id,
                         id: result.parent_message_id,
                         imageUrl: require('../../images/profiles/user.png'),
                         imageAlt: result.email,
@@ -53,7 +55,6 @@ const userMessage = async (conversation_id,email) => {
                 
                 });
                 messageDetails[conversation_id] = [...msge]
-                console.log(messageDetails);
             })
             .catch((error) => {
                 console.error('Error:', error);
@@ -76,22 +77,22 @@ const messagesSaga = function* (action) {
     const messages = messageDetails[conversationId];
     // const startIndex = lastMessageId ? messages.findIndex(message => message.id === lastMessageId) + 1 : 0;
     const startIndex = lastMessageId ? lastMessageId : messages.length;
-    console.log('startIndex', startIndex)
+    // console.log('startIndex', startIndex)
     var endIndex = startIndex - numberOfMessages;
   
     if (endIndex < 0) {
         endIndex = 0;
         // It is not a number
     }
-    console.log('endIndex', endIndex)
+    // console.log('endIndex', endIndex)
     const pageGroup = messages.slice(endIndex, startIndex);
-    console.log('pageGroup', pageGroup)
+    // console.log('pageGroup', pageGroup)
     const newLastMessageId = pageGroup.length > 0 ? pageGroup[0].id : null;
     const reversepageGroup = pageGroup.reverse();
-    console.log('newLastMessageId', newLastMessageId)
+    // console.log('newLastMessageId', newLastMessageId)
     // var hasMoreMessages = newLastMessageId && endIndex < (messages.length - 1);
     var hasMoreMessages = newLastMessageId && endIndex !== 0;
-    console.log('hasMoreMessages', hasMoreMessages)
+    // console.log('hasMoreMessages', hasMoreMessages)
     yield delay(500);
 
     yield put(messagesLoaded(conversationId, reversepageGroup, hasMoreMessages, newLastMessageId));
@@ -151,8 +152,46 @@ const sendmessagesSaga = function* (action) {
 }
 
 export const messageDelete = function*(action){
-    console.log("ACTION WORKING");
-    console.log(action.payload);
+    const NODE_API = process.env.REACT_APP_NODE_API
+    const URL = `${NODE_API}/api/deletemessage`
+    const AuthStr='Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTYyNTk5MTMwNywiZXhwIjoxNjI2MDc3NzA3fQ.rtQZNlGvIxkdFvlXJjU-ddIhBjXkpAEz7_x2O9bcLcE';
+    const now = new Date();
+    var lastMessage = '';
+    fetch(URL,{
+        method: 'POST',
+        headers: {
+            'Content-type': 'application/json',
+            'authorization': AuthStr
+        },
+        body: JSON.stringify({ 
+                                id: action.payload.message.msg_id,
+                                timestamp: now
+
+                            })
+    })
+    .then((res)=>{
+        return res.json();
+    })
+    .then((data)=>{
+        lastMessage = data.lastMessage.message;
+    })
+    yield delay(1000);
+    yield put({
+        type: 'UPDATE_LATEST_MESSAGE',
+        payload: {
+            room_id: action.payload.message.room_id,
+            lastMessage: lastMessage
+        }
+    })
+    yield delay(1000);
+    yield put({
+        type: 'MESSAGE_DELETE',
+        payload: {
+                    msg_id: action.payload.message.msg_id,
+                    room_id: action.payload.message.room_id
+                }
+    })
+    
     
 }
 

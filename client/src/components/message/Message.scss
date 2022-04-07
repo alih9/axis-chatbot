@@ -33,6 +33,10 @@ $speech-bubble-border-color: darken($accent-color, 13.18);
             display: inline;
         }
 
+        > .message-dropdown:hover {
+            color: #dc3545;
+        }
+
         >  .message-content {
             display: none;
         }
@@ -42,7 +46,9 @@ $speech-bubble-border-color: darken($accent-color, 13.18);
         justify-content: end;
 
         > .message-content {
-            justify-items: end;
+                grid-template-columns: 1fr auto;
+                grid-column-gap: 15px;
+                justify-items: end;
 
             > .message-text {
                 background: $primary-color;
@@ -53,10 +59,17 @@ $speech-bubble-border-color: darken($accent-color, 13.18);
 
             > .message-dropdown {
                 display: inline;
+                > .delete-icon {
+                    margin-top: 50%;
+                }
             }
-    
-            > .message-dropdown-content {
-                display: none;
+
+            > .message-delete-modal {
+                font-size: 20px;
+            }
+
+            > .message-dropdown:hover {
+                color: #dc3545;
             }
 
         }
@@ -66,7 +79,7 @@ $speech-bubble-border-color: darken($accent-color, 13.18);
         justify-items: start;
 
         > .message-content {
-            grid-template-columns: 48px 1fr;
+            grid-template-columns: 48px 1fr 1fr;
             grid-column-gap: 15px;
 
             > .message-text {
@@ -75,6 +88,13 @@ $speech-bubble-border-color: darken($accent-color, 13.18);
                 border: 1px solid $speech-bubble-border-color;
                 border-radius: 14px 14px 14px 0;
             }
+
+            > .message-dropdown {
+                > .delete-icon {
+                    margin-top: 15%;
+                }
+            }
+            
         }
     }
 }

@@ -5,11 +5,10 @@ import { messagesRequested } from '../../store/actions';
 import Message from '../../components/message/Message';
 import './MessageList.scss';
 
-const MessageList = ({ selectedConversation,conversationId, getMessagesForConversation, loadMessages, DeleteMessage }) => {
+const MessageList = ({ selectedConversation,conversationId, getMessagesForConversation, loadMessages, DelMsg }) => {
     const messageDetails = getMessagesForConversation(conversationId);
     let messages = messageDetails ? messageDetails.messages: null;
     let messageItems = null;
-    console.log(DeleteMessage);
     
     useEffect(() => {
         if (!messageDetails) {
@@ -19,7 +18,7 @@ const MessageList = ({ selectedConversation,conversationId, getMessagesForConver
 
     if (messages && messages.length > 0) {
         messageItems = messages.map((message, index) => {
-            return <Message key={index} isMyMessage={message.isMyMessage} message={message} OnDeleteMessage={DeleteMessage}/>;
+            return <Message key={index} isMyMessage={message.isMyMessage} message={message} DelMsg={DelMsg}/>;
         });
     }
 

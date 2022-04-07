@@ -38,9 +38,9 @@ export const messagesLoaded = (conversationId, messages, hasMoreMessages, lastMe
     payload: { conversationId, messages, hasMoreMessages, lastMessageId }
 });
 
-export const updateMessagesDetails = (conversationId, messages, hasMoreMessages, lastMessageId, isMyMessage, date,time) => ({
+export const updateMessagesDetails = (conversationId, messages, hasMoreMessages, lastMessageId, isMyMessage, date, time, msg_id, parent_id) => ({
     type: 'UPDATED_MESSAGE_DETAIL',
-    payload: { conversationId, messages, hasMoreMessages, lastMessageId, isMyMessage , date,time}
+    payload: { conversationId, messages, hasMoreMessages, lastMessageId, isMyMessage , date, time, msg_id, parent_id}
 });
 
 export const sendMessage = (conversationId, messages, email) => ({

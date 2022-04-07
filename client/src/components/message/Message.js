@@ -1,49 +1,55 @@
 import React from 'react';
 import classNames from 'classnames';
-import axios from 'axios';
+import {Modal, Button} from 'react-bootstrap';
+import DeleteRoundedIcon from '@material-ui/icons/DeleteRounded';
 import './Message.scss';
 
-const Message = ({ isMyMessage, message, OnDeleteMessage }) => {
+const Message = ({ isMyMessage, message, DelMsg }) => {
+    const [showModal, setShowModal] = React.useState(false);  
+    const handleClose = () => setShowModal(false);
+    const handleShow = () => setShowModal(true);
+
+    const onDeleteMessage = ()=>{
+        handleClose();
+        DelMsg(message,isMyMessage);
+    }
+
     const messageClass = classNames('message-row', {
         'you-message': isMyMessage,
         'other-message': !isMyMessage
     });
-    console.log(OnDeleteMessage);
     const imageThumbnail = isMyMessage ? null : <img src={message.imageUrl} alt={message.imageAlt} />;
-    const deleteMessage =async(m)=>{
-        console.log(m);
-        console.log(m.id,m.email);
-        const NODE_API = process.env.REACT_APP_NODE_API
-        const URL = `${NODE_API}/api/deletemessage`
-        const AuthStr='Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTYyNTk5MTMwNywiZXhwIjoxNjI2MDc3NzA3fQ.rtQZNlGvIxkdFvlXJjU-ddIhBjXkpAEz7_x2O9bcLcE';
-
-        await axios({
-            method: 'post',
-            url: URL,
-            headers: {
-                'Content-type': 'application/json',
-                'authorization': AuthStr
-            },
-            data: {
-                parent_id: m.id,
-                email : m.email,
-                created_at: m.createdAt
-            }
-        })
-    }       
+    const messageDropdown = <div className="message-dropdown">
+                                <DeleteRoundedIcon className='delete-icon' fontSize='large' onClick={handleShow}/>
+                            </div>;
     return (
+        
         <div className={messageClass}>
             <div className="message-content">
                 {imageThumbnail}
+                {isMyMessage ? messageDropdown : null}
                 <div className="message-text">
                     {message.messageText}
                 </div>
-                <div className="message-dropdown">
-                    <button onClick={()=>{OnDeleteMessage(message);}}>Delete Message</button>
-                </div>
-                {/* <div className="message-dropdown-content">
-                    <p>Hello World!</p>
-                </div> */}
+                {!isMyMessage ? messageDropdown : <div></div>}
+                <Modal
+                    show={showModal}
+                    onHide={handleClose}    
+                    keyboard={false}
+                    centered
+                    className='message-delete-modal'
+                >
+                    <Modal.Header closeButton>
+                        <Modal.Title>Delete Message</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <p>Are you sure you want to delete this message?</p>
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="secondary" onClick={()=>{handleClose()}}>Cancel</Button>
+                        <Button variant="danger" onClick={()=>{onDeleteMessage()}}>Delete Message</Button>
+                    </Modal.Footer>
+                </Modal>
                 <div className="message-time">{message.createdAt}</div>
             </div>
         </div>

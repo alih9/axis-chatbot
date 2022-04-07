@@ -15,6 +15,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import {Modal} from 'react-bootstrap';
 
 import './ChatTitle.scss';
 
@@ -92,92 +93,89 @@ const StyledMenuItem = withStyles((theme) => ({
 }))(MenuItem);
     if (selectedConversation) {
         chatTitleContents = (
-            <>
-                <div><span>{selectedConversation.title}</span>
-                    
-                    
-                    <span>
-
-                    <div>
-      <Button
-        aria-controls="customized-menu"
-        aria-haspopup="true"
-        variant="contained"
-        color="primary"
-        onClick={handleClick}
-      >
-       Settings
-      </Button>
-      <StyledMenu
-        id="customized-menu"
-        anchorEl={anchorEl}
-        keepMounted
-        open={Boolean(anchorEl)}
-        onClose={handleClose}>
-                                
-        <div onClick={handleClickOpen}>
-        <StyledMenuItem>
-        
-          <ListItemIcon>
-            <InboxIcon fontSize="large" />
-          </ListItemIcon>
-          <ListItemText primary="Room Deactivate" onClick={handleClickOpen} />
-        </StyledMenuItem>
-        </div>
+        <>
+          <div>
+            <span>{selectedConversation.title}</span>
+            <span>
+            <div>
+              <Button
+                aria-controls="customized-menu"
+                aria-haspopup="true"
+                variant="contained"
+                color="primary"
+                onClick={handleClick}
+              >
+                Settings
+              </Button>
+              <StyledMenu
+                id="customized-menu"
+                anchorEl={anchorEl}
+                keepMounted
+                open={Boolean(anchorEl)}
+                onClose={handleClose}>
+                                        
+                <div onClick={handleClickOpen}>
+                <StyledMenuItem>
+                  <ListItemIcon>
+                    <InboxIcon fontSize="large" />
+                  </ListItemIcon>
+                  <ListItemText primary="Room Deactivate" onClick={handleClickOpen} />
+                </StyledMenuItem>
+                </div>
        
-        {/* <StyledMenuItem>
-          <ListItemIcon>
-            <DraftsIcon fontSize="large" />
-          </ListItemIcon>
-          <ListItemText primary="Drafts" />
-        </StyledMenuItem>
+                {/* <StyledMenuItem>
+                  <ListItemIcon>
+                    <DraftsIcon fontSize="large" />
+                  </ListItemIcon>
+                  <ListItemText primary="Drafts" />
+                </StyledMenuItem>
+                
+                <StyledMenuItem>
+                  <ListItemIcon>
+                    <SendIcon fontSize="large" />
+                  </ListItemIcon>
+                  <ListItemText primary="Inbox" />
+                </StyledMenuItem> */}
         
-        <StyledMenuItem>
-          <ListItemIcon>
-            <SendIcon fontSize="large" />
-          </ListItemIcon>
-          <ListItemText primary="Inbox" />
-        </StyledMenuItem> */}
-        
-      </StyledMenu>
+              </StyledMenu>
 
-      <Dialog
-        open={open}
-        onClose={handleClickClose}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
+              <Dialog
+                open={open}
+                onClose={handleClickClose}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+              >
         
-       {selectedConversation.is_active && <>
-     <DialogTitle id="alert-dialog-title">{"Deactivation Room?"}</DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            Sure, you want to Deactivate the Room?
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClickClose} >
-            Disagree
-          </Button>
-          <Button onClick={handleClickDeactivate}  autoFocus>
-            Agree
-          </Button>
-        </DialogActions> </>}
+              {selectedConversation.is_active && <>
+              <DialogTitle id="alert-dialog-title">{"Deactivation Room?"}</DialogTitle>
+                <DialogContent>
+                  <DialogContentText id="alert-dialog-description">
+                    Sure, you want to Deactivate the Room?
+                  </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                  <Button onClick={handleClickClose} >
+                    Disagree
+                  </Button>
+                  <Button onClick={handleClickDeactivate}  autoFocus>
+                    Agree
+                  </Button>
+                </DialogActions> </>}
 
-        {!selectedConversation.is_active && <> <DialogTitle id="alert-dialog-title">{"Deactivation Room?"}</DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            Room is Already Deactive!
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClickClose} color="primary">
-            OK
-          </Button>
-         
-        </DialogActions> </>}
+                {!selectedConversation.is_active && <> <DialogTitle id="alert-dialog-title">{"Deactivation Room?"}</DialogTitle>
+                <DialogContent>
+                  <DialogContentText id="alert-dialog-description">
+                    Room is Already Deactive!
+                  </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                  <Button onClick={handleClickClose} color="primary">
+                    OK
+                  </Button>
+                
+                </DialogActions> </>}
         
-      </Dialog>
+              </Dialog>
                             
     </div>
 
@@ -186,7 +184,31 @@ const StyledMenuItem = withStyles((theme) => ({
                 
                 <div onClick={ () => { setDelBox(true); } } title="Delete Conversation">
                     <TrashIcon /> </div>
-                    <Dialog
+      <Modal
+        show={delBox}
+        onHide={delHandleClickClose}    
+        keyboard={false}
+        centered
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <Modal.Header closeButton>
+            <Modal.Title>{"Delete Room?"}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+            <p>Are you sure you want to Delete this Room?</p>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button onClick={delHandleClickClose} color="primary">
+            Cancel
+          </Button>            
+          <Button onClick={()=>{onDeleteConversation(); delHandleClickClose();  }  } color="warning" autoFocus>
+            Delete
+          </Button>
+        </Modal.Footer>
+      </Modal>
+      
+      {/* <Dialog
         open={delBox}
         onClose={delHandleClickClose}
         aria-labelledby="alert-dialog-title"
@@ -207,10 +229,10 @@ const StyledMenuItem = withStyles((theme) => ({
             Deleted
           </Button>
         </DialogActions> 
-        </Dialog>
+        </Dialog> */}
                
                
-            </>
+      </>
         );
     }
 
