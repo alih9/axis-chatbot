@@ -54,7 +54,7 @@ socket.on("deactivate_chat",()=>{
   },[socket])
 
 
-const handleSubscribeForm = async (name,email) => {
+const handleSubscribeForm = async (name,email,message) => {
   toggleInputDisabled();
   setemail(email)
     // const URL='http://localhost:5000/api/userdata'
@@ -92,7 +92,7 @@ const handleSubscribeForm = async (name,email) => {
       'Content-Type': 'application/json',
       'authorization': AuthStr 
     },
-    data: {  name: name, email: email ,tenant_id:tenant_id, last_message_update_at:currentDate,last_message:"New Message" },
+    data: {  name: name, email: email,message:message ,tenant_id:tenant_id, last_message_update_at:currentDate,last_message:"New Message" },
   })
     .then((data) => {
       console.log(data.data.chattingRoom.room.id);
@@ -124,6 +124,8 @@ const handleSubscribeForm = async (name,email) => {
             }
           
         }
+       
+
       }
       else {
         setParent_message_id(0)
@@ -132,6 +134,7 @@ const handleSubscribeForm = async (name,email) => {
       const room_number = data.data.chattingRoom.room.id;
        const msg = `Allocated Room Number #${room_number}`;
        renderCustomComponent(message, { message:msg });
+       addUserMessage(message)
 })
     .catch((error) =>
 {

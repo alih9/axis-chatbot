@@ -5,14 +5,14 @@ const Form = (props) => {
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
- 
+ const [message,setMessage]= useState('')
   const click = (e) => {
     e.preventDefault();
-    if (name && email) {
-      props.handleSubscribeForm(name, email);
+    if (name && email && message) {
+      props.handleSubscribeForm(name, email,message);
     }
  else {
-  alert('name or Email Missing');
+  alert('Name or Email or Message Missing');
 }
   }
 
@@ -33,6 +33,8 @@ const Form = (props) => {
                 <input type="text" id="defaultFormCardNameEx" placeholder="Name" value={name} onChange={(e) => setName(e.target.value)} required className="form-control" />
                 <br />
                 <input type="email" id="defaultFormCardEmailEx" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required className="form-control " />
+                <br />
+                <input type="text" id="" placeholder="Message" value={message} onChange={(e) => setMessage(e.target.value)} required className="form-control " />
           
                 <div className="text-center py-4 mt-3" style={{ textAlign: "center", marginBottom: "10px" }}>
                   <button onClick={click} className="btn btn-primary rcw-send"> Send

@@ -4,7 +4,7 @@ import './index.css';
 import App from './App'
 import ChatBox from './component/ChatBox';
 import io from "socket.io-client";
-import { BrowserRouter as  Router,Route, Switch ,useLocation} from "react-router-dom";
+import { BrowserRouter as  Router,Route, Switch } from "react-router-dom";
 // const socket = io.connect('http://localhost:4000/');
 // const socket = io.connect('/');
 var options = {
