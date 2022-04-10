@@ -157,14 +157,13 @@ const conversationsReducer = (state = initialState, action) => {
 
           return state;
       }
-    //   case 'CONVERSATIONS_LOADING': {
-    //     console.log('INSIDE CONVERSATIONS LOADING');
-    //       var loadingState = state;
-    //       const newState = action.payload.conversationLoading;
-    //       loadingState.isLoading = newState;
-    //       console.log(loadingState);
-    //       return loadingState;
-    //   }
+      case 'UPDATE_LATEST_MESSAGE': {
+        const newState = {...state};
+        var conversation_index = newState.conversations.findIndex((con)=> con.id == action.payload.room_id);
+        newState.conversations[conversation_index].latestMessageText = action.payload.lastMessage;
+
+        return newState;
+      }
       default:
         return state;
     }

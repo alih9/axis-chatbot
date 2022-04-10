@@ -335,7 +335,7 @@ const get_messages = async (req, res) => {
     console.log(req.body)
     const msg_id = req.body.chat_room_id;
     console.log(msg_id)
-    const msg=await Message.findAll({ where: { room_id: msg_id } })
+    const msg=await Message.findAll({ where: { room_id: msg_id, deleted_at: null } })
    
     var user = await User.findOne({ where: { email: req.body.email } })
     if (!user) {
@@ -531,23 +531,24 @@ catch(error){
 }
 
 const delete_message=async(req,res)=>{
-    try{
-        console.log("Delete Message Body ----------------->(delete_message)",req.body);
-        var message = Message.findOne({where : {parent_message_id: req.body.parent_id, email: req.body.email}})
-        .then(
-            (msg)=>{
-                console.log(msg);
-            },
-            (err)=>{
-                console.log(err);
-            }
-            );
-        res.status(200).send("Message Deleted");
-    }
-    catch(error){
-        console.log(error);
-    }
-    }
+    console.log("Delete Message Body ----------------->(delete_message)",req.body);
+    var message = await Message.findOne({where : {id: req.body.id}});
+    await message.update({deleted_at:req.body.timestamp});
+    var newLastMessage = await Message.findOne({
+        where : {room_id: message.room_id, deleted_at: null},
+        order :  [ [ 'createdAt', 'DESC' ]]
+        })
+    // if(newLastMessage == null)
+    //     newLastMessage = '';
+    var chat_room = await ChatRoom.findOne({where: {id: message.room_id}});
+    
+    await chat_room.update({ last_message : newLastMessage.message});
+    await chat_room.save().then(()=>{
+        console.log(newLastMessage);
+        res.status(200).send({ lastMessage: newLastMessage, success: true })
+    })
+ 
+}
 
 
 const get_tenant_id=async(req,res)=>{

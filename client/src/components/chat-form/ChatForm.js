@@ -53,11 +53,11 @@ const ChatForm = ({ user, selectedConversation, onMessageSubmitted, onMessageUpd
                 onMessageSubmitted(textMessage, date , time);
                 if (selectedConversation !== undefined) {
                     const conversationId = selectedConversation.id;
-                   
-                    onMessageUpdate(conversationId, textMessage, messageDetails[conversationId].hasMoreMessages, messageDetails[conversationId].lastMessageId, true, date , time)
-                    SendLiveMessage(textMessage,conversationId);
+                    //messageDetails is message state
+                    //onMessageUpdate(conversationId, textMessage, messageDetails[conversationId].hasMoreMessages, messageDetails[conversationId].lastMessageId, true, date , time)
+                    //SendLiveMessage(textMessage,conversationId);
                     const email = user.email;
-                    sendmsg(conversationId, textMessage, email, currentDate , time);
+                    sendmsg(conversationId, textMessage, email, currentDate ,date, time);
                     setdisableButton(true);
                     setsenddisableButton(false)
                     updateConversationDateMessage(conversationId, textMessage, date , time)
@@ -94,7 +94,7 @@ const ChatForm = ({ user, selectedConversation, onMessageSubmitted, onMessageUpd
 
 
 
-    const sendmsg = async(conversationId, messages, email, date , time) => {
+    const sendmsg = async(conversationId, messages, email, GMTdate , date, time) => {
         // alert(date)
         const NODE_API = process.env.REACT_APP_NODE_API
         const URL=`${NODE_API}/api/tenantchatting`
@@ -106,12 +106,15 @@ const ChatForm = ({ user, selectedConversation, onMessageSubmitted, onMessageUpd
                     'Content-Type': 'application/json',
                     // 'authorization': AuthStr 
                   },
-          body:JSON.stringify({'room_id':conversationId,'email':email,'message':messages,'date':date ,'time': time})
+          body:JSON.stringify({'room_id':conversationId,'email':email,'message':messages,'date':GMTdate ,'time': time})
         })
         .then(response => response.json())
             .then(async (data) => {
                 // data.msg
+                console.log(data.message.parent_message_id);
                 console.log('Sucessfully Saved');
+                onMessageUpdate(conversationId, textMessage, messageDetails[conversationId].hasMoreMessages, messageDetails[conversationId].lastMessageId, true, date , time, data.message.id, data.message.parent_message_id );
+                SendLiveMessage(textMessage,conversationId,data.message.parent_message_id);
                 setTimeout(() => {
                     setdisableButton(false);
                     setsenddisableButton(true)

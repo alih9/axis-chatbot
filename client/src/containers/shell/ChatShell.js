@@ -40,7 +40,8 @@ const ChatShell = ({ type,conversations,user,socket, selectedConversation,messag
                 var time = nowtime();
                 date="";
                 toast.success(data.text, {position: "bottom-right",autoClose: 2000,hideProgressBar: false, closeOnClick: true, });
-                onMessageUpdate(data.room, data.text, true, null, false, date, time)
+                onMessageUpdate(data.room, data.text, true, null, false, date, time, data.msg_id, data.id)
+                console.log("HELLO WORLD HOW ARE YOU");
                 updateConversationDateMessage(data.room, data.text, date, time)
                 setconversationRender(true)
             
@@ -63,8 +64,35 @@ const ChatShell = ({ type,conversations,user,socket, selectedConversation,messag
     const [searchConversation, setsearchConversation] = React.useState('')
     const [searchList, setsearchList] = React.useState(false)
     const [newsearchList, setnewSearchList] = React.useState(false)
+    const [selectedConversationId, setselectedConversationId] = React.useState('')
    
-   
+    useEffect(()=>{ 
+        console.log("Selected Conversation ID Changed",selectedConversation.id);
+        if(Object.keys(selectedConversation).length != 0)
+        {
+            var count =0;
+            if(selectedConversationId != '')
+            {      
+                    var active_chats = {
+                        active_room: selectedConversation.id,
+                        in_active_room: selectedConversationId
+                    }
+                    socket.emit("room_activation_status",active_chats);
+                    console.log(active_chats);
+                    console.log("John has left this conversation ",selectedConversationId, selectedConversation.id);
+                    setselectedConversationId(selectedConversation.id);
+            } else {
+                var active_chats = {
+                    active_room: selectedConversation.id,
+                    in_active_room: null
+                }
+                socket.emit("room_activation_status",active_chats);
+                console.log("John has joined this conversation ",selectedConversation.id);
+                setselectedConversationId(selectedConversation.id); 
+            }
+        }
+        
+    },[selectedConversation.id])
     
     useEffect(() => {
         setnewSearchList(conversations.filter((n)=>  n.title.includes(searchConversation) ))
@@ -75,7 +103,18 @@ const ChatShell = ({ type,conversations,user,socket, selectedConversation,messag
             setsearchList(false)
         }
     }, [searchConversation])
-    
+
+    const DelMsg = (message,isMyMessage)=>{
+        console.log("Function Called");
+        console.log(user);
+        console.log(message,isMyMessage);
+        onDeleteMessage(message);
+        if(isMyMessage)
+        {
+            socket.emit("delete_message", message);
+        }
+    }
+
     const joinRoom = (conversationId) => {
         socket.emit("joinRoom", { username: user.email, roomname: conversationId })
     }
@@ -83,8 +122,9 @@ const ChatShell = ({ type,conversations,user,socket, selectedConversation,messag
         socket.emit("disconect");
     }
 
-    const SendLiveMessage = (message,conversationId) => {
-        socket.emit("chat", {text:message,email:selectedConversation.title,room:conversationId});
+    const SendLiveMessage = (message,conversationId,id) => {
+        console.log("SEND LIVE MESSAGE");
+        socket.emit("chat", {text:message, email:selectedConversation.title, room:conversationId, id: id});
         //    socket.emit("chat1", message);
     }
     
@@ -95,17 +135,22 @@ const ChatShell = ({ type,conversations,user,socket, selectedConversation,messag
     );
 
     if (selectedConversation) {
-        console.log(onDeleteMessage);
         conversationContent = (
             <>
-                <MessageList conversationId={selectedConversation.id} selectedConversation={selectedConversation} DeleteMessage={onDeleteMessage}/>
+                <MessageList conversationId={selectedConversation.id} selectedConversation={selectedConversation} DelMsg={DelMsg}/>
             </>
         );
     }
 
     return (
-        <>                    
-          {/* {isAuthenticated? <LogoutButton/> : '' } */}
+        <>     
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+            integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3"
+            crossOrigin="anonymous"
+            />               
+          {isAuthenticated? <LogoutButton/> : '' }
         <div id="chat-container">
             <ConversationSearch
                 searchConversation={searchConversation}
@@ -132,8 +177,6 @@ const ChatShell = ({ type,conversations,user,socket, selectedConversation,messag
                 conversationRender={conversationRender}
                 setconversationRender={setconversationRender} />}
 
-            {/* {isLoading ? <div id='loading-layout'><div id='loading-content'><Loading/></div></div>:null} */}
-            
             <NewConversation />
             {isLoading ? <div id='loading-layout'><div id='loading-content'><Loading/></div></div>
             :
@@ -179,7 +222,7 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => ({
     conversationChanged: conversationId => dispatch(conversationChanged(conversationId)),
     onMessageSubmitted: (messageText, date , time) => { dispatch(newMessageAdded(messageText, date , time)); },
-    onMessageUpdate: (conversationId, messages, hasMoreMessages, lastMessageId, isMyMessage, date,time) => { dispatch(updateMessagesDetails(conversationId, messages, hasMoreMessages, lastMessageId, isMyMessage, date,time)); },
+    onMessageUpdate: (conversationId, messages, hasMoreMessages, lastMessageId, isMyMessage, date, time, msg_id, id) => { dispatch(updateMessagesDetails(conversationId, messages, hasMoreMessages, lastMessageId, isMyMessage, date, time, msg_id, id)); },
     sendMessage: (conversationId, messages, email) => { dispatch(sendMessage(conversationId, messages, email)); },
     updateConversation: (conversationId, email,time) => { dispatch(updateConversation(conversationId, email,time)) },
     deletedAddedConversation: (conversationId) => { dispatch(deletedAddedConversation(conversationId)) },

@@ -1,5 +1,5 @@
 
-import { Widget, addResponseMessage,dropMessages,renderCustomComponent,toggleInputDisabled,addUserMessage } from 'react-chat-widget';
+import { Widget, addResponseMessage,dropMessages,renderCustomComponent,toggleInputDisabled,addUserMessage,deleteMessages } from 'react-chat-widget';
 import 'react-chat-widget/lib/styles.css';
 import React, { useEffect,useState} from 'react';
 import Form from './Form'
@@ -37,11 +37,31 @@ function ChatBox({socket}) {
 
   useEffect(() => {
     socket.on("message", (data) => {
+      console.log(data);
       if( data.room==room.id)
       {
-      addResponseMessage(data.text)
+      addResponseMessage(data.text, data.id)
       }
     });
+
+    socket.on("delete_customer_message", (data) => {  
+      console.log(data);
+      console.log(data.messageText, data.id);
+      deleteMessages(data.messageText,data.id);
+    });
+
+    socket.on("tenant_left", ()=>{
+      if(tenant)
+      renderCustomComponent(message, {message: `${tenant.name} has left the room`});
+      console.log("TENANT LEFT");
+    });
+
+    socket.off("tenant_joined").on("tenant_joined", ()=>{
+      if(tenant)
+      renderCustomComponent(message, {message: `${tenant.name} has joined the room`});
+      console.log("TENANT JOINED");
+    });
+
   }, [socket,roomId]);
   
   useEffect(()=>{
@@ -96,14 +116,14 @@ const handleSubscribeForm = async (name,email,message) => {
   })
     .then((data) => {
       console.log(data.data.chattingRoom.room.id);
-      alert(JSON.stringify(data.data.chattingRoom.tenant))
+      //alert(JSON.stringify(data.data.chattingRoom.tenant))
       settenant(data.data.chattingRoom.tenant);
       socket.emit("joinRoom", { username: email, roomname: data.data.chattingRoom.room.id })
       socket.emit("add_active_user", { email: email})
       socket.emit("active_room", {tenant:data.data.chattingRoom.tenant.email, username: email, roomname: data.data.chattingRoom.room.id })
 
        dropMessages()
-       alert(JSON.stringify(data.data.chattingRoom.room))
+       //alert(JSON.stringify(data.data.chattingRoom.room))
       setRoom(data.data.chattingRoom.room)
       setRoomId(data.data.chattingRoom.room.id)
       setRoomParticipant(data.data.chattingRoom.roomParticipant)
@@ -115,11 +135,12 @@ const handleSubscribeForm = async (name,email,message) => {
         const allmsg = data.data.chattingRoom.allMsg;
         for (let i = 0; i < allmsg.length; i++) {
           
-            console.log(allmsg[i].email)
+            console.log(allmsg[i])
             if (allmsg[i].email === email) {
               addUserMessage(allmsg[i].message, allmsg[i].parent_message_id)
             }
             else {
+              if(allmsg[i].deleted_at == null)
               addResponseMessage(allmsg[i].message, allmsg[i].parent_message_id)
             }
           
@@ -131,8 +152,8 @@ const handleSubscribeForm = async (name,email,message) => {
         setParent_message_id(0)
       }
       
-      const room_number = data.data.chattingRoom.room.id;
-       const msg = `Allocated Room Number #${room_number}`;
+      const tenant_name = data.data.chattingRoom.tenant.name;
+       const msg = `Conversation has been connected to ${tenant_name}`;
        renderCustomComponent(message, { message:msg });
        addUserMessage(message)
 })
@@ -147,7 +168,7 @@ const handleSubscribeForm = async (name,email,message) => {
   const handleNewUserMessage = async (message) => {
     // socket.emit("chat1", message);
     alert(JSON.stringify(roomId))
-    socket.emit("chat", {text:message,email:tenant.email,room:room.id});
+    //socket.emit("chat", {text:message,email:tenant.email,room:room.id});
     const NODE_API = process.env.REACT_APP_NODE_API
     const URL = `${NODE_API}/api/customerchatting`
     const now = new Date();
@@ -166,6 +187,8 @@ const handleSubscribeForm = async (name,email,message) => {
     data: {  message: message, user_id: user.id ,room_id:room.id,parent_message_id:i,date:currentDate ,email:email },
   }).then(data => {
        console.log(data.data);
+       socket.emit("chat", {text:message,email:tenant.email,room:room.id, msg_id: data.data.message.id, id: data.data.parent_message_id});
+   
 })
   }
 

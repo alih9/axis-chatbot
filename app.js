@@ -118,6 +118,8 @@ io.on("connection", (socket) => {
         username: activeuser.email,
         room: user.room,
         text: user.text,
+        msg_id: user.msg_id,
+        id: user.id
     });
   }
   });
@@ -144,6 +146,21 @@ io.on("connection", (socket) => {
       // });
     // }
   });
+
+  socket.on("delete_message", (data)=>{
+    socket.to(data.room_id).emit("delete_customer_message",data);
+  });
+
+  socket.on("room_activation_status", (active_chats)=>{
+    console.log("active_room socket event response");
+    if(active_chats.in_active_room != null){
+      socket.to(active_chats.in_active_room).emit("tenant_left");
+      socket.to(active_chats.active_room).emit("tenant_joined");
+    } else {
+      socket.to(active_chats.active_room).emit("tenant_joined");
+    }
+  })
+
 
   socket.on("deactivate_room", (room) => {
     //the user is deleted from array of users and a left room message displayed
