@@ -74,7 +74,7 @@ socket.on("deactivate_chat",()=>{
   },[socket])
 
 
-const handleSubscribeForm = async (name,email,message) => {
+const handleSubscribeForm = async (name,email,messagetmp) => {
   toggleInputDisabled();
   setemail(email)
     // const URL='http://localhost:5000/api/userdata'
@@ -108,11 +108,11 @@ const handleSubscribeForm = async (name,email,message) => {
   await axios({
     method: 'post',
     url: URL,
-    headers: {
+    headers: { 
       'Content-Type': 'application/json',
       'authorization': AuthStr 
     },
-    data: {  name: name, email: email,message:message ,tenant_id:tenant_id, last_message_update_at:currentDate,last_message:"New Message" },
+    data: { name: name, email: email,message:messagetmp ,tenant_id:tenant_id, last_message_update_at:currentDate,last_message:messagetmp },
   })
     .then((data) => {
       console.log(data.data.chattingRoom.room.id);
@@ -120,7 +120,7 @@ const handleSubscribeForm = async (name,email,message) => {
       settenant(data.data.chattingRoom.tenant);
       socket.emit("joinRoom", { username: email, roomname: data.data.chattingRoom.room.id })
       socket.emit("add_active_user", { email: email})
-      socket.emit("active_room", {tenant:data.data.chattingRoom.tenant.email, username: email, roomname: data.data.chattingRoom.room.id })
+      socket.emit("active_room", {tenant:data.data.chattingRoom.tenant.email, username: name,email:email, roomname: data.data.chattingRoom.room.id ,last_message:messagetmp })
 
        dropMessages()
        //alert(JSON.stringify(data.data.chattingRoom.room))
@@ -136,32 +136,39 @@ const handleSubscribeForm = async (name,email,message) => {
         for (let i = 0; i < allmsg.length; i++) {
           
             console.log(allmsg[i])
-            if (allmsg[i].email === email) {
-              addUserMessage(allmsg[i].message, allmsg[i].parent_message_id)
-            }
-            else {
-              if(allmsg[i].deleted_at == null)
-              addResponseMessage(allmsg[i].message, allmsg[i].parent_message_id)
-            }
-          
-        }
-       
 
+            if (allmsg[i].email === email) 
+            {
+              addUserMessage(allmsg[i].message+"", allmsg[i].parent_message_id)
+            }
+            else 
+            {
+              if(allmsg[i].deleted_at == null)
+              addResponseMessage(allmsg[i].message+"", allmsg[i].parent_message_id)
+            }
+        }
       }
-      else {
+      else 
+      {
         setParent_message_id(0)
+        addUserMessage(messagetmp)
       }
-      
       const tenant_name = data.data.chattingRoom.tenant.name;
-       const msg = `Conversation has been connected to ${tenant_name}`;
-       renderCustomComponent(message, { message:msg });
-       addUserMessage(message)
+      console.log("Tenant-Name",tenant_name)
+      const msg = `Conversation has been connected to ${tenant_name}`;
+       renderCustomComponent((props) => {
+        return (
+            <div className="wrapper">
+                {props.message}
+             </div> 
+    );
+    }, { message:msg });
+      // 
 })
     .catch((error) =>
 {
   addResponseMessage('Issue Happen!');
   console.error('Error:', error);
-  
 });
   };
 
@@ -187,8 +194,8 @@ const handleSubscribeForm = async (name,email,message) => {
     data: {  message: message, user_id: user.id ,room_id:room.id,parent_message_id:i,date:currentDate ,email:email },
   }).then(data => {
        console.log(data.data);
-       socket.emit("chat", {text:message,email:tenant.email,room:room.id, msg_id: data.data.message.id, id: data.data.parent_message_id});
-   
+       alert(tenant.email)
+       socket.emit("chat", {text:message,email:tenant.email,room:room.id, msg_id: data.data.message.id, id: data.data.parent_message_id});   
 })
   }
 

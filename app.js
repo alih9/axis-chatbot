@@ -92,8 +92,10 @@ io.on("connection", (socket) => {
         console.log('--------------------------------------Add active ROOM executed')
         io.to(p_user.socket_id).emit("add_active_room", {
           userId: p_user.socket_id,
+          email:user.email,
           username: user.username,
           room: user.roomname,
+          last_message:user.last_message
         });
     
       }

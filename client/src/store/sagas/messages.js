@@ -39,7 +39,6 @@ const userMessage = async (conversation_id,email) => {
                     const now = new Date(result.sent_at);
                     const date=datetimeformat(now)
 
-
                     return {
                         msg_id: result.id,
                         room_id: result.room_id,
@@ -52,7 +51,6 @@ const userMessage = async (conversation_id,email) => {
                         isMyMessage: isMyMessage
                     }
 
-                
                 });
                 messageDetails[conversation_id] = [...msge]
             })

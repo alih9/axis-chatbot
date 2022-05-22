@@ -77,7 +77,7 @@ const getConversations = async (email,payload) => {
     })
     .then(response => response.json())
         .then(async(data) => {
-            console.log("Conversations Loading in Sage");
+            console.log("Conversations Loading in Sage",data);
             let newConversations = data.chat.map((result) => {
                 // const user = result.user;
                 const now = new Date(result.chatRoom.last_message_update_at)
@@ -85,12 +85,15 @@ const getConversations = async (email,payload) => {
                 // alert(myDate.toLocaleString());
                 // var currentDate = now.toLocaleString();
               var currentDate=datetimeformat(now);
-                                                 
+
+              //call the api to get user from the user.id
+                           console.log("-------------------------------->Result",result)                      
                 return {
                     id: result.chatRoom.id,
                     imageUrl: require('../../images/profiles/user.png'),
                     imageAlt: `${result.chatRoom.room_name}`,
                     title: `${result.chatRoom.room_name}`,
+                    user: result.user[0],
                     createdAt: `${currentDate}`,
                     is_active:`${result.chatRoom.is_active}`,
                     latestMessageText: `${result.chatRoom.last_message}`,

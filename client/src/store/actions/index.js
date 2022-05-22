@@ -22,10 +22,14 @@ export const messageDeleted = (message) => ({
     payload: { message }
 });
 
+export const messageDeleteDetail = (room_id) => ({
+    type: 'MESSAGE_DELETE_DETAIL',
+    payload: { room_id }
+});
+
 export const newMessageAdded = (textMessage, date, time) => ({
     type: 'NEW_MESSAGE_ADDED',
-   payload:{ textMessage, date, time
-}
+   payload:{ textMessage, date, time}
 });
 
 export const messagesRequested = (conversationId, numberOfMessages, lastMessageId) => ({
@@ -48,9 +52,9 @@ export const sendMessage = (conversationId, messages, email) => ({
     payload: { conversationId, messages, email }
 });
 
-export const updateConversation = (conversationId, email) => ({
+export const updateConversation = (conversationId,username, email,time='',last_message='') => ({
     type: 'UPDATE_CONVERSATION',
-    payload: { conversationId, email }
+    payload: { conversationId,username, email,time,last_message }
 });
 export const updateConversationDateMessage = (conversationId, message, date, time) => ({
     type: 'UPDATE_CONVERSATION_DATE_MESSAGE',
@@ -65,11 +69,12 @@ export const deletedAddedConversation = (conversationId) => ({
 export const updatedUserCredential = (user) => ({
     type: 'UPDATED_USER_CREDENTIAL',
     payload: { user }
-});
+}); 
 
 export const deleteSelectedConvsersation=()=>({
     type:'SELECTED_CONVERSATION_DELETED',
 })
+
 export const conversationsLoading = (conversationsLoading) =>({
     type: 'CONVERSATIONS_LOADING',
     payload: { conversationsLoading }

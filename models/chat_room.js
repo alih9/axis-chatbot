@@ -17,6 +17,7 @@ module.exports = (sequelize, DataTypes) => {
     room_name: DataTypes.STRING,
     is_active: DataTypes.INTEGER,
     tenant_id: DataTypes.INTEGER,
+    user_id: DataTypes.INTEGER,
     last_message_update_at: DataTypes.DATE,
     last_message: DataTypes.STRING,
     deleted_at: DataTypes.DATE,

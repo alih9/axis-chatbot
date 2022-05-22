@@ -62,6 +62,14 @@ const messagesReducer = (state = initialState, action) => {
             return newState;
         }
 
+        case 'MESSAGE_DELETE_DETAIL': {
+            console.log(action.payload);
+            const {room_id} = action.payload;
+            const newState = {...state};
+            delete newState.messageDetails[room_id]
+            return newState;
+        }
+
         default: 
             return state;
     }

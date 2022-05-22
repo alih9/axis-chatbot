@@ -78,9 +78,10 @@ const conversationsReducer = (state = initialState, action) => {
         case 'UPDATE_CONVERSATION': {
             const existingState = { ...state };
             const newState = existingState;
-            const { conversationId ,time ,email} = action.payload;
+            const { conversationId ,time ,username,email,last_message} = action.payload;
                                                                   
-            alert(conversationId)
+            alert(JSON.stringify(action.payload))
+            
 
             let selectedConversationIndex = newState.conversations.findIndex(c => c.id === conversationId);
             console.log('selectedConversationIndex',selectedConversationIndex)
@@ -92,10 +93,11 @@ const conversationsReducer = (state = initialState, action) => {
             id: conversationId,
             imageUrl: require('../../images/profiles/daryl.png'),
             imageAlt: email,
-            title: email,
+            title: username,
+            email:email,
             createdAt: time,
             is_active:1,
-            latestMessageText: 'New Message',
+            latestMessageText: last_message,
             messages: []
         },)
             
