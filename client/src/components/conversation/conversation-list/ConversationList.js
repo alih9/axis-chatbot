@@ -3,7 +3,7 @@ import React from 'react';
 import ConversationItem from '../conversation-item/ConversationItem';
 import './ConversationList.scss';
 
-const ConversationList = ({ conversations, selectedConversation, onConversationItemSelected,joinRoom, disconnect,conversationRender,setconversationRender,socket }) => {
+const ConversationList = ({ conversations, selectedConversation, onConversationItemSelected,joinRoom, disconnect,conversationRender, activeUsers,setconversationRender,socket }) => {
     
     React.useEffect(() => {
         console.log('---------------conversation Changed', conversations)
@@ -12,12 +12,14 @@ const ConversationList = ({ conversations, selectedConversation, onConversationI
             setconversationRender(false)
         }
     }, [conversationRender]);
-
     
 
     const conversationItems = conversations.map((conversation) => {
         const conversationIsActive = selectedConversation && conversation.id === selectedConversation.id;
-
+        var activeCustomer = false;
+        if(activeUsers.indexOf(conversation.id) != -1){
+            activeCustomer = true;
+        }
         return <ConversationItem 
             key={ conversation.id }
             onConversationItemSelected={onConversationItemSelected}
@@ -25,6 +27,7 @@ const ConversationList = ({ conversations, selectedConversation, onConversationI
             joinRoom={joinRoom}
             disconnect={disconnect}
             isActive={ conversationIsActive }
+            activeCustomer = { activeCustomer }
             conversation={ conversation } />;
     });
 

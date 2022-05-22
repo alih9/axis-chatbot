@@ -28,7 +28,6 @@ router
   .post('/deleteconversation', UserController.delete_conversation)
   .post('/deletemessage',UserController.delete_message)
   .post('/gettenant',UserController.get_tenant_id)
-
   
   
   .get('/test',(req,res)=>{res.send({message:'testing'})})

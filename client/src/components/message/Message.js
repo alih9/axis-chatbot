@@ -30,16 +30,16 @@ const Message = ({ isMyMessage, message, DelMsg }) => {
                 {imageThumbnail}
                 {isMyMessage ? messageDropdown : null}
                 <div className="message-text">
-                <div class="dropdown">
+                {/* <div className="dropdown"> */}
   {/* <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
     
   </button> */}
-  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-    <a class="dropdown-item" href="#">Action</a>
-    <a class="dropdown-item" href="#">Another action</a>
-    <a class="dropdown-item" href="#">Something else here</a>
-  </div>
-</div>
+  {/* <div className="dropdown-menu" aria-labelledby="dropdownMenuButton">
+    <a className="dropdown-item" href="#">Action</a>
+    <a className="dropdown-item" href="#">Another action</a>
+    <a className="dropdown-item" href="#">Something else here</a>
+  </div> */}
+{/* </div> */}
                     {message.messageText}
                 </div>
                 {!isMyMessage ? messageDropdown : <div></div>}
