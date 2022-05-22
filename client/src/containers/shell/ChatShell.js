@@ -14,6 +14,7 @@ import Loading from '../../components/util/Loading';
 import { toast } from 'react-toastify';
 import {useAuth0  } from "@auth0/auth0-react";
 import {nowtime} from '../../utility/datetime';
+import { useIdleTimer } from 'react-idle-timer';
 import './ChatShell.scss';
 
 
@@ -21,12 +22,60 @@ import './ChatShell.scss';
 const ChatShell = ({ type,conversations,user,socket, selectedConversation,messageDetails, conversationChanged, onMessageSubmitted, onMessageUpdate, sendMessage, onDeleteConversation, loadConversations, updateConversation, deletedAddedConversation,updateConversationDateMessage,deleteSelectedConvsersation,isLoading, onDeleteMessage, messageDeleteDetail }) =>
 {
     const { isAuthenticated } = useAuth0();
-    const [conversationRender, setconversationRender] = useState(false)
+    const [conversationRender, setconversationRender] = useState(false);
+    const [activeUsers, setactiveUsers] = useState([]);
+    let activeUsersTemp;
     useEffect(() => {
         loadConversations(type);
     }, [loadConversations]);
 
+    useEffect(()=>{
+        //Initial Active Users (used on reloads)
+        socket.emit("get_active_customers");
+        socket.on("active_customers", (data)=>{
+            console.log("Initial Values",data);
+            setactiveUsers(data);
+        });
+
+    }, [])
+
+    const changeActiveUsers = (newUser)=>{
+        // let index = activeUsersTemp.indexOf(newUser.room_id);
+        console.log("New User and index",newUser.is_active);
+        if(newUser.is_active)
+        {
+            console.log("ADD ACTIVE USER",newUser.room_id);
+            setactiveUsers((prevState)=>{
+                if(prevState.indexOf(newUser.room_id) == -1){
+                    activeUsersTemp = [...prevState,newUser.room_id];
+                } else {
+                    activeUsersTemp = prevState;
+                }
+                console.log("NEW STATE-> ",activeUsersTemp);
+                return activeUsersTemp;
+            })
+        }
+         else 
+        {
+            console.log("REMOVE ACTIVE USER",newUser.room_id);
+            setactiveUsers((prevState) =>{
+                let index = prevState.indexOf(newUser.room_id);
+                if(index != -1){
+                    activeUsersTemp = [...prevState];
+                    console.log(prevState);
+                    activeUsersTemp.splice(index,1);
+                } else {
+                    activeUsersTemp = prevState;
+                    console.log("USER NOT FOUND IN CURRENT STATE");
+                }
+                return activeUsersTemp;
+            });    
+        }
+    }
  
+    useEffect(()=>{
+        console.log("Active Users change invoked",activeUsers);
+    },[activeUsers]);
     useEffect(() => {
         console.log("SOCKET CHANGED");
         socket.on("message", (data) => {
@@ -41,7 +90,6 @@ const ChatShell = ({ type,conversations,user,socket, selectedConversation,messag
                 date="";
                 toast.success(data.text, {position: "bottom-right",autoClose: 2000,hideProgressBar: false, closeOnClick: true, });
                 onMessageUpdate(data.room, data.text, true, null, false, date, time, data.msg_id, data.id)
-                console.log("HELLO WORLD HOW ARE YOU");
                 updateConversationDateMessage(data.room, data.text, date, time)
                 setconversationRender(true)
             
@@ -57,6 +105,15 @@ const ChatShell = ({ type,conversations,user,socket, selectedConversation,messag
                
         });
 
+
+        socket.on("active_customer", (data)=>{
+            console.log("ADD ACTIVE CUSTOMER EVENT INVOKED",data);
+            changeActiveUsers(data);
+        });
+       
+        return ()=>{
+            socket.off("add_active_cusomter")
+        }
      
 
     }, [socket])
@@ -69,7 +126,7 @@ const ChatShell = ({ type,conversations,user,socket, selectedConversation,messag
     useEffect(()=>{ 
         console.log("Selected Conversation ID Changed",selectedConversation.id);
         if(Object.keys(selectedConversation).length != 0)
-        {
+    {
             var count =0;
             if(selectedConversationId != '')
             {      
@@ -77,7 +134,7 @@ const ChatShell = ({ type,conversations,user,socket, selectedConversation,messag
                         active_room: selectedConversation.id,
                         in_active_room: selectedConversationId
                     }
-                    socket.emit("room_activation_status",active_chats);
+                    socket.emit(" room_activation_status",active_chats);
                     console.log(active_chats);
                     console.log("John has left this conversation ",selectedConversationId, selectedConversation.id);
                     setselectedConversationId(selectedConversation.id);
@@ -127,6 +184,26 @@ const ChatShell = ({ type,conversations,user,socket, selectedConversation,messag
         socket.emit("chat", {text:message, email:selectedConversation.email, room:conversationId, id: id});
         //    socket.emit("chat1", message);
     }
+
+    const handleOnIdle = event => {
+        console.log('user is idle')
+        console.log('last active', getLastActiveTime())
+        if(selectedConversation){
+            console.log("Rejoin Selected Conversation here",selectedConversation.id);
+            joinRoom(selectedConversation.id);
+        }
+      }
+    
+    //   const handleOnActive = event => {
+    //     console.log('user is active', event)
+    //     console.log('time remaining', getRemainingTime())
+    //   }
+      
+      const { getRemainingTime, getLastActiveTime } = useIdleTimer({
+        timeout: 30000,
+        onIdle: handleOnIdle,
+        debounce: 2000
+      })
     
     let conversationContent = (
         <>
@@ -166,6 +243,7 @@ const ChatShell = ({ type,conversations,user,socket, selectedConversation,messag
                 conversations={newsearchList}
                 selectedConversation={selectedConversation} 
                 conversationRender={conversationRender}
+                activeUsers = {activeUsers}
                 setconversationRender={setconversationRender} />}
 
             {!searchList && <ConversationList
@@ -176,6 +254,7 @@ const ChatShell = ({ type,conversations,user,socket, selectedConversation,messag
                 conversations={conversations}
                 selectedConversation={selectedConversation}
                 conversationRender={conversationRender}
+                activeUsers = {activeUsers}
                 setconversationRender={setconversationRender} />}
 
             <NewConversation />

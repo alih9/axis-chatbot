@@ -15,7 +15,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import {Modal} from 'react-bootstrap';
+import {Modal, ModalTitle} from 'react-bootstrap';
 
 import './ChatTitle.scss';
 
@@ -42,6 +42,7 @@ const ChatTitle = ({ selectedConversation, onDeleteConversation,deletedAddedConv
     }).then(data => { 
       deletedAddedConversation(selectedConversation.id)
       messageDeleteDetail(selectedConversation.id)
+      console.log(deleteSelectedConvsersation);
       deleteSelectedConvsersation()
     })
       setOpen(false);
@@ -141,7 +142,44 @@ const StyledMenuItem = withStyles((theme) => ({
         
               </StyledMenu>
 
-              <Dialog
+              <Modal
+                show={open}
+                onHide={handleClickClose}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+              >
+                {selectedConversation.is_active && <>
+                  <Modal.Header>
+                    <Modal.Title>{"Deactivation Room?"}</Modal.Title>
+                  </Modal.Header>
+                  <Modal.Body>
+                    Sure, you want to Deactivate the Room?
+                  </Modal.Body>
+                  <Modal.Footer>
+                    <Button onClick={handleClickClose}>
+                      Disagree
+                    </Button>            
+                    <Button onClick={handleClickDeactivate}>
+                      Agree
+                    </Button>
+                  </Modal.Footer>
+                </>
+                }
+                {!selectedConversation.is_active && <> 
+                <Modal.Header>
+                  <ModalTitle id="alert-dialog-title">{"Deactivation Room?"}</ModalTitle>
+                </Modal.Header>
+                <Modal.Body>
+                    Room is Already Deactive!
+                  <Button onClick={handleClickClose}>
+                    OK
+                  </Button>
+                </Modal.Body> 
+                </>}
+
+              </Modal>
+
+              {/* <Dialog
                 open={open}
                 onClose={handleClickClose}
                 aria-labelledby="alert-dialog-title"
@@ -177,7 +215,7 @@ const StyledMenuItem = withStyles((theme) => ({
                 
                 </DialogActions> </>}
         
-              </Dialog>
+              </Dialog> */}
                             
     </div>
 

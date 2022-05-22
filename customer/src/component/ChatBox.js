@@ -7,6 +7,7 @@ import date from 'date-and-time';
 import message from './message';
 import { useLocation} from "react-router-dom";
 import  axios from 'axios'
+import { useIdleTimer } from 'react-idle-timer'
 
 
 function useQuery() {
@@ -121,7 +122,7 @@ const handleSubscribeForm = async (name,email,messagetmp) => {
       socket.emit("joinRoom", { username: email, roomname: data.data.chattingRoom.room.id })
       socket.emit("add_active_user", { email: email})
       socket.emit("active_room", {tenant:data.data.chattingRoom.tenant.email, username: name,email:email, roomname: data.data.chattingRoom.room.id ,last_message:messagetmp })
-
+      socket.emit("active_customer",{tenant_email: data.data.chattingRoom.tenant.email, room_id: data.data.chattingRoom.room.id, is_active: true});
        dropMessages()
        //alert(JSON.stringify(data.data.chattingRoom.room))
       setRoom(data.data.chattingRoom.room)
@@ -164,6 +165,8 @@ const handleSubscribeForm = async (name,email,messagetmp) => {
     );
     }, { message:msg });
       // 
+      // const msg = `Conversation has been connected to ${tenant_name}`;
+      //  renderCustomComponent(message, { message:msg });
 })
     .catch((error) =>
 {
@@ -198,6 +201,44 @@ const handleSubscribeForm = async (name,email,messagetmp) => {
        socket.emit("chat", {text:message,email:tenant.email,room:room.id, msg_id: data.data.message.id, id: data.data.parent_message_id});   
 })
   }
+
+  const activeCustomerEvent = (isActive)=>{
+    socket.emit("active_customer",{tenant_email: tenant.email, room_id: roomId, is_active: isActive});
+    socket.emit("add_active_user", { email: email})
+  }
+
+  const handleOnIdle = event => {
+    console.log('user is idle',tenant);
+    console.log(email,roomId);
+    if(email && roomId){
+      console.log("Email & RoomId on Idle event",email,roomId);
+      socket.emit("joinRoom", { username: email, roomname: roomId})
+      socket.emit("remove_active_user", {email: email})
+      if(tenant)
+        activeCustomerEvent(false)  
+      //socket.emit("active_customer",{tenant_email: tenant.email, room_id: roomId, is_active: false});
+    }
+    console.log('last active', getLastActiveTime())
+  }
+
+  const handleOnActive = event => {
+    console.log('user is active', event)
+    console.log('time remaining', getRemainingTime())
+    console.log(tenant);
+    if(roomId && tenant){
+      socket.emit("joinRoom", { username: email, roomname: roomId})
+      activeCustomerEvent(true);
+      //socket.emit("active_customer",{tenant_email: tenant.email, room_id: roomId, is_active: true});
+    }
+    
+  }
+  
+  const { getRemainingTime, getLastActiveTime } = useIdleTimer({
+    timeout: 25000,
+    onIdle: handleOnIdle,
+    onActive: handleOnActive,
+    debounce: 2000
+  })
 
   
   return (
