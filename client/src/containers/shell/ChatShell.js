@@ -181,7 +181,7 @@ const ChatShell = ({ type,conversations,user,socket, selectedConversation,messag
 
     const SendLiveMessage = (message,conversationId,id) => {
         console.log("SEND LIVE MESSAGE");
-        socket.emit("chat", {text:message, email:selectedConversation.email, room:conversationId, id: id});
+        socket.emit("chat", {text:message, email:selectedConversation.user.email, room:conversationId, id: id});
         //    socket.emit("chat1", message);
     }
 
@@ -212,7 +212,6 @@ const ChatShell = ({ type,conversations,user,socket, selectedConversation,messag
     );
 
     if (selectedConversation?.id) {
-        alert('run')
         conversationContent = (
             <>
                 <MessageList conversationId={selectedConversation.id} selectedConversation={selectedConversation} DelMsg={DelMsg}/>

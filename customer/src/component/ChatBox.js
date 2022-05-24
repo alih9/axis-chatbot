@@ -213,7 +213,7 @@ const handleSubscribeForm = async (name,email,messagetmp) => {
     if(email && roomId){
       console.log("Email & RoomId on Idle event",email,roomId);
       socket.emit("joinRoom", { username: email, roomname: roomId})
-      socket.emit("remove_active_user", {email: email})
+      // socket.emit("remove_active_user", {email: email})
       if(tenant)
         activeCustomerEvent(false)  
       //socket.emit("active_customer",{tenant_email: tenant.email, room_id: roomId, is_active: false});

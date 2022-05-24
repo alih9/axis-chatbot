@@ -209,10 +209,13 @@ setTimeout(() => {
     });
 
     socket.on("disconnecting", async() => {
+      let room_id;
       if([...socket.rooms][1] != undefined){
         room_id = [...socket.rooms][1];
       }
       console.log("ROOM ID and is ", socket.rooms);
+      if(room_id)
+      {
       //Get Tenant's and users email to dispatch event
       var room_participants = await get_participants_emails(room_id);
       var tenant_email, customer_email;
@@ -236,6 +239,7 @@ setTimeout(() => {
       } 
       deactivate_User(customer_email);
 
+    }
     });
 
 

@@ -148,7 +148,6 @@ const customer_chatting_registration = async(req, res) => {
                 console.log(user)
 
             let chatroom =await new ChatRoom({
-                
                 room_name: user.name,
                 tenant_id:req.body.tenant_id,
                 user_id:user.id,
@@ -156,6 +155,7 @@ const customer_chatting_registration = async(req, res) => {
                 last_message:req.body.last_message,
                 last_message_update_at:req.body.last_message_update_at,
             })
+            
                await chatroom.save().then(async (room) => {
 
                 var parent_id = await Message.findAll({limit: 1,where: {room_id:room.id },order: [ [ 'createdAt', 'DESC' ]] })
@@ -281,7 +281,6 @@ const customer_chatting_registration_v2=async(req,res)=>{
         })
                           
         return res.status(200).send({ user: user, success: true })
-
 }
 
 
@@ -315,7 +314,7 @@ const customer_chatting = async (req, res) => {
     
      
         return res.status(200).send({ message: msg_ack, success: true })
-    // return msg_ack;
+    
 }
 
 
@@ -437,7 +436,7 @@ const get_messages = async (req, res) => {
     console.log(req.body)
     const msg_id = req.body.chat_room_id;
     console.log(msg_id)
-    const msg=await Message.findAll({ where: { room_id: msg_id } })
+    const msg=await Message.findAll({ where: { room_id: msg_id, deleted_at: null } })
    
     var user = await User.findOne({ where: { email: req.body.email } })
     if (!user) {
