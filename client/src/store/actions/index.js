@@ -52,9 +52,9 @@ export const sendMessage = (conversationId, messages, email) => ({
     payload: { conversationId, messages, email }
 });
 
-export const updateConversation = (conversationId,username, email,time='',last_message='') => ({
+export const updateConversation = (conversationId, user , time='', last_message='') => ({
     type: 'UPDATE_CONVERSATION',
-    payload: { conversationId,username, email,time,last_message }
+    payload: { conversationId, user, time, last_message }
 });
 export const updateConversationDateMessage = (conversationId, message, date, time) => ({
     type: 'UPDATE_CONVERSATION_DATE_MESSAGE',

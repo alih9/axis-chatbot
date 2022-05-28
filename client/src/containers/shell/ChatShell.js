@@ -100,7 +100,7 @@ const ChatShell = ({ type,conversations,user,socket, selectedConversation,messag
             console.log("Socket Add Active Room Event Invoked");
             // deletedAddedConversation(data.room)
             var time = nowtime();
-            updateConversation(data.room, data.username,data.email ,time,data.last_message) 
+            updateConversation(data.room, data.user,time,data.last_message) 
             setconversationRender(true)
                
         });
@@ -304,7 +304,7 @@ const mapDispatchToProps = dispatch => ({
     onMessageSubmitted: (messageText, date , time) => { dispatch(newMessageAdded(messageText, date , time)); },
     onMessageUpdate: (conversationId, messages, hasMoreMessages, lastMessageId, isMyMessage, date, time, msg_id, id) => { dispatch(updateMessagesDetails(conversationId, messages, hasMoreMessages, lastMessageId, isMyMessage, date, time, msg_id, id)); },
     sendMessage: (conversationId, messages, email) => { dispatch(sendMessage(conversationId, messages, email)); },
-    updateConversation: (conversationId,username, email,time,last_message) => { dispatch(updateConversation(conversationId,username, email,time,last_message)) },
+    updateConversation: (conversationId, user, time, last_message) => { dispatch(updateConversation(conversationId, user, time, last_message)) },
     deletedAddedConversation: (conversationId) => { dispatch(deletedAddedConversation(conversationId)) },
     deleteSelectedConvsersation:()=>{dispatch(deleteSelectedConvsersation())},
     onDeleteConversation: () => { dispatch(conversationDeleted()); },

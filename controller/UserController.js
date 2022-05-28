@@ -363,8 +363,8 @@ const show_all_chat_users = async (req,res) => {
         console.log(tenant_temp)
         const chatRoom = await ChatRoom.findAll({
             where: { tenant_id: tenant_temp.id ,is_active: 1, deleted_at: null}
-        });
-        
+        })
+        .catch((err)=>console.log(err));
         console.log(chatRoom)
         for (h = 0; h < chatRoom.length; h++) {
         var user = [];

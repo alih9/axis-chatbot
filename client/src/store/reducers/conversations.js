@@ -78,7 +78,7 @@ const conversationsReducer = (state = initialState, action) => {
         case 'UPDATE_CONVERSATION': {
             const existingState = { ...state };
             const newState = existingState;
-            const { conversationId ,time ,username,email,last_message} = action.payload;
+            const { conversationId, time, user, last_message} = action.payload;
                                                                   
             alert(JSON.stringify(action.payload))
             
@@ -92,9 +92,9 @@ const conversationsReducer = (state = initialState, action) => {
           newState.conversations.unshift( {
             id: conversationId,
             imageUrl: require('../../images/profiles/daryl.png'),
-            imageAlt: email,
-            title: username,
-            email:email,
+            imageAlt: user.username,
+            title: user.username,
+            user: user,
             createdAt: time,
             is_active:1,
             latestMessageText: last_message,

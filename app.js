@@ -98,8 +98,7 @@ setTimeout(() => {
         console.log('--------------------------------------Add active ROOM executed')
         io.to(p_user.socket_id).emit("add_active_room", {
           userId: p_user.socket_id,
-          email:user.email,
-          username: user.username,
+          user:user,
           room: user.roomname,
           last_message:user.last_message
         });
@@ -137,14 +136,18 @@ setTimeout(() => {
           await get_room(user.email)
           .then((data)=>{
             console.log("This is the mapped data",data);
-            user_arr.push(data.room_id);
+            if(data != null)
+            {
+              user_arr.push(data.room_id);
+            }
           })
         })
-        Promise.all(promise).then(()=>{
-          console.log(promise, user_arr);
-          socket.emit("active_customers",user_arr);
-        })
+          // Promise.all(promise).then(()=>{
+          //   console.log(promise, user_arr);
+          //   socket.emit("active_customers",user_arr);
+          // })
       })
+      .catch((err)=>console.log(err))
     })
 
 
