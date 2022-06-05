@@ -43,7 +43,7 @@ const App = ({ updatedUserCredential}) => {
   
 const addTenant=async()=>{
 await  userlogin(user);
-await  socket.emit("add_active_user", { email: user.email})
+await  socket.emit("add_active_user", { email: user.email, is_active: 1})
   
 }
   

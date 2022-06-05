@@ -48,11 +48,10 @@ setTimeout(() => {
     console.log('----------------->Start the Connection of the socket IO')
 
 
-    socket.on("add_active_user", async (email) => {
-      console.log(`----------------->Add active User ${email.email}`)
-
+    socket.on("add_active_user", async (data) => {
+      console.log(`----------------->Add active User ${data.email} and ${data.is_active}`)
       //gets the room user and the message sent
-      const active_user = await add_active_users(socket.id, email.email, socket);
+      const active_user = await add_active_users(socket.id, data.email, socket,data.is_active);
       console.log('----------------->Added Active User', active_user);
     });
 
@@ -130,22 +129,19 @@ setTimeout(() => {
       var user_arr = [];
       console.log("---------------GET ACTIVE CUSTOMER EVENT INVOKED----------------");
       get_active_customers()
-      .then((data)=>{
-        const promise = data.map(async (user)=>{ 
-          console.log("------THIS IS THE MAP FUNCTION -------",user.email); 
-          await get_room(user.email)
-          .then((data)=>{
-            console.log("This is the mapped data",data);
-            if(data != null)
+      .then(async (data)=>{
+        for(var i=0;i<data.length;i++){
+          console.log("FOR LOOP RUNNING",data[i]);
+          await get_room(data[i].email)
+          .then((room)=>{
+            if(room != null)
             {
-              user_arr.push(data.room_id);
+              user_arr.push(room.room_id);
             }
           })
-        })
-          // Promise.all(promise).then(()=>{
-          //   console.log(promise, user_arr);
-          //   socket.emit("active_customers",user_arr);
-          // })
+          console.log("THIS IS THE USER ARRAY OF ACTIVE CUSTOMERS",user_arr);
+        }
+        socket.emit("active_customers",user_arr);
       })
       .catch((err)=>console.log(err))
     })
@@ -212,36 +208,33 @@ setTimeout(() => {
     });
 
     socket.on("disconnecting", async() => {
-      let room_id;
-      if([...socket.rooms][1] != undefined){
-        room_id = [...socket.rooms][1];
-      }
-      console.log("ROOM ID and is ", socket.rooms);
+      console.log("This is the ",socket.rooms,socket.id);
+      let room_id = Array.from(socket.rooms).filter((s)=> s != socket.id)[0];
       if(room_id)
       {
-      //Get Tenant's and users email to dispatch event
-      var room_participants = await get_participants_emails(room_id);
-      var tenant_email, customer_email;
-      console.log("DISCONNECTING", room_participants);
-      for(let i=0;i<room_participants.length;i++)
-      {
-        if(room_participants[i].is_tenant == true ){
-          tenant_email = room_participants[i].email;
-        } else {
-          customer_email = room_participants[i].email;
+        console.log(room_id);
+        //Get Tenant's and users email to dispatch event
+        var room_participants = await get_participants_emails(room_id);
+        var tenant_email, customer_email;
+        console.log("DISCONNECTING", room_participants);
+        for(let i=0;i<room_participants.length;i++)
+        {
+          if(room_participants[i].is_tenant == true ){
+            tenant_email = room_participants[i].email;
+          } else {
+            customer_email = room_participants[i].email;
+          }
         }
-      }
-      const p_user = await get_user_socketid(tenant_email);
-      console.log(room_participants);
-      console.log("P USER",p_user);
-      if (p_user) {
-        socket.to(p_user.socket_id).emit("active_customer", {
-          room_id: room_id,
-          is_active: false
-        })
-      } 
-      deactivate_User(customer_email);
-
+        const p_user = await get_user_socketid(tenant_email);
+        console.log(room_participants);
+        console.log("P USER",p_user,room_id);
+        if (p_user) {
+          socket.to(p_user.socket_id).emit("active_customer", {
+            room_id: room_id,
+            is_active: false
+          })
+        } 
+        deactivate_User(customer_email);
     }
     });
 

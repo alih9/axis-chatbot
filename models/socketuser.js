@@ -15,7 +15,8 @@ module.exports = (sequelize, DataTypes) => {
   };
   SocketUser.init({
     email: DataTypes.STRING,
-    socket_id: DataTypes.STRING
+    socket_id: DataTypes.STRING,
+    is_active: DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'SocketUser',
