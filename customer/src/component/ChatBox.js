@@ -177,7 +177,7 @@ const handleSubscribeForm = async (name,email,messagetmp) => {
 
   const handleNewUserMessage = async (message) => {
     // socket.emit("chat1", message);
-    alert(JSON.stringify(roomId))
+    // alert(JSON.stringify(roomId))
     //socket.emit("chat", {text:message,email:tenant.email,room:room.id});
     const NODE_API = process.env.REACT_APP_NODE_API
     const URL = `${NODE_API}/api/customerchatting`
@@ -197,7 +197,7 @@ const handleSubscribeForm = async (name,email,messagetmp) => {
     data: {  message: message, user_id: user.id ,room_id:room.id,parent_message_id:i,date:currentDate ,email:email },
   }).then(data => {
        console.log(data.data);
-       alert(tenant.email)
+      //  alert(tenant.email)
        socket.emit("chat", {text:message,email:tenant.email,room:room.id, msg_id: data.data.message.id, id: data.data.parent_message_id});   
 })
   }
