@@ -120,7 +120,7 @@ const handleSubscribeForm = async (name,email,messagetmp) => {
       //alert(JSON.stringify(data.data.chattingRoom.tenant))
       settenant(data.data.chattingRoom.tenant);
       socket.emit("joinRoom", { username: email, roomname: data.data.chattingRoom.room.id })
-      socket.emit("add_active_user", { email: email})
+      socket.emit("add_active_user", { email: email, is_active: 1})
       socket.emit("active_room", {tenant:data.data.chattingRoom.tenant.email, username: name,email:email, roomname: data.data.chattingRoom.room.id ,last_message:messagetmp })
       socket.emit("active_customer",{tenant_email: data.data.chattingRoom.tenant.email, room_id: data.data.chattingRoom.room.id, is_active: true});
        dropMessages()
@@ -204,7 +204,16 @@ const handleSubscribeForm = async (name,email,messagetmp) => {
 
   const activeCustomerEvent = (isActive)=>{
     socket.emit("active_customer",{tenant_email: tenant.email, room_id: roomId, is_active: isActive});
-    socket.emit("add_active_user", { email: email})
+    if(isActive)
+    {
+      console.log("Active");
+      socket.emit("add_active_user", { email: email, is_active: 1});
+    }
+    else
+    { 
+      console.log("not Active");
+      socket.emit("add_active_user", { email: email, is_active: 0});
+    }
   }
 
   const handleOnIdle = event => {
@@ -213,7 +222,7 @@ const handleSubscribeForm = async (name,email,messagetmp) => {
     if(email && roomId){
       console.log("Email & RoomId on Idle event",email,roomId);
       socket.emit("joinRoom", { username: email, roomname: roomId})
-      // socket.emit("remove_active_user", {email: email})
+      socket.emit("remove_active_user", {email: email})
       if(tenant)
         activeCustomerEvent(false)  
       //socket.emit("active_customer",{tenant_email: tenant.email, room_id: roomId, is_active: false});

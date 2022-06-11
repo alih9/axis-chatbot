@@ -98,7 +98,7 @@ const StyledMenuItem = withStyles((theme) => ({
         chatTitleContents = (
         <>
           <div>
-            <span>{selectedConversation.title}</span>
+            <span>{selectedConversation.user.email}</span>
             <span>
             <div>
               <Button
