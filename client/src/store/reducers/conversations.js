@@ -80,7 +80,7 @@ const conversationsReducer = (state = initialState, action) => {
             const newState = existingState;
             const { conversationId, time, user, last_message} = action.payload;
                                                                   
-            alert(JSON.stringify(action.payload))
+            // alert(JSON.stringify(action.payload))
             
 
             let selectedConversationIndex = newState.conversations.findIndex(c => c.id === conversationId);
