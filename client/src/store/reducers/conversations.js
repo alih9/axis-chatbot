@@ -68,7 +68,7 @@ const conversationsReducer = (state = initialState, action) => {
                 is_active:updatedState.is_active,
                 latestMessageText:message ,
                 messages: updatedState.messages,
-    
+                ...updatedState
                } )
             console.log("Update Conversation action executed"); 
             console.log(newState.conversations[0].latestMessageText);

@@ -102,7 +102,6 @@ const ChatShell = ({ type,conversations,user,socket, selectedConversation,messag
             var time = nowtime();
             updateConversation(data.room, data.user,time,data.last_message) 
             setconversationRender(true)
-               
         });
 
 

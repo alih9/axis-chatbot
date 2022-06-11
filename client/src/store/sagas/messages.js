@@ -92,15 +92,23 @@ const messagesSaga = function* (action) {
     var hasMoreMessages = newLastMessageId && endIndex !== 0;
     // console.log('hasMoreMessages', hasMoreMessages)
     yield delay(500);
+    const conversationState = (state) => state.conversationState;
+    const conversationstate = yield select(conversationState);
+    console.log('Selected Converstaion,',conversationstate?.selectedConversation)
+    if(Object.keys(conversationstate?.selectedConversation).length != 0 )
+    {
 
     yield put(messagesLoaded(conversationId, reversepageGroup, hasMoreMessages, newLastMessageId));
-    if (hasMoreMessages) {
+    console.log('Message messagesLoaded Run')
+    if (hasMoreMessages) 
+    {
         yield delay(1000);
         yield put({
             type: 'MESSAGES_REQUESTED',
             payload: { conversationId, numberOfMessages, lastMessageId: newLastMessageId }
         })
     }
+}
 
 }
 }
@@ -108,10 +116,6 @@ const messagesSaga = function* (action) {
 export const watchGetMessagesAsync = function*() {
     yield takeLatest('MESSAGES_REQUESTED', messagesSaga);
 }
-
-
-
-
 
 
 
