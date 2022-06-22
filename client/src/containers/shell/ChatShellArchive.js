@@ -49,6 +49,7 @@ const ChatShellArchive = ({
   const { user, isAuthenticated } = useAuth0();
 
   useEffect(() => {
+    console.log(">>>>>>>>>>>>>>>>>>>>>>>>>> Archive ");
     updatedUserCredential(user);
   }, []);
   const userlogin = async (user) => {

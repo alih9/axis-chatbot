@@ -11,6 +11,7 @@ import "./index.scss";
 import rootSaga from "./store/sagas";
 import rootReducer from "./store/reducers";
 import App from "./App";
+
 import ChatShellArchive from "./containers/shell/ChatShellArchive";
 import Auth0Provider from "./auth0-provide";
 const sagaMiddleware = createSagaMiddleware();
@@ -27,17 +28,21 @@ sagaMiddleware.run(rootSaga);
 ReactDOM.render(
   <Provider store={store}>
     <Router>
-      <Auth0Provider>
-        <Switch>
-          <Route exact path="/client/index.html" component={App} />
+      <Switch>
+        <Auth0Provider>
           <Route
             exact
-            path="/archive"
+            path={`${process.env.REACT_APP_BASE_PATH}/index.html`}
+            component={App}
+          />
+          <Route
+            exact
+            path={`${process.env.REACT_APP_BASE_PATH}/archive`}
             component={() => <ChatShellArchive type={"archive"} />}
           />
-        </Switch>
-        <ToastContainer autoClose={2000} />
-      </Auth0Provider>
+        </Auth0Provider>
+      </Switch>
+      <ToastContainer autoClose={2000} />
     </Router>
   </Provider>,
   document.getElementById("root")
