@@ -32,7 +32,7 @@ ReactDOM.render(
         <Auth0Provider>
           <Route
             exact
-            path={`${process.env.REACT_APP_BASE_PATH}/index.html`}
+            path={`${process.env.REACT_APP_BASE_PATH}/inbox`}
             component={App}
           />
           <Route

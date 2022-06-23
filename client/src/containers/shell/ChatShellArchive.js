@@ -49,7 +49,10 @@ const ChatShellArchive = ({
   const { user, isAuthenticated } = useAuth0();
 
   useEffect(() => {
-    console.log(">>>>>>>>>>>>>>>>>>>>>>>>>> Archive ");
+    console.log(
+      ">>>>>>>>>>>>>>>>>>>>>>>>>> Archive ",
+      updatedUserCredential(user)
+    );
     updatedUserCredential(user);
   }, []);
   const userlogin = async (user) => {
@@ -65,7 +68,7 @@ const ChatShellArchive = ({
     })
       .then((response) => response.json())
       .then((data) => {
-        //  alert(JSON.stringify(data));
+        // alert(JSON.stringify(data));
       })
       .catch((error) => {
         console.error("Error:", error);

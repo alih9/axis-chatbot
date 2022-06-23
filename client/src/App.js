@@ -47,6 +47,9 @@ const App = ({ updatedUserCredential }) => {
   };
 
   React.useEffect(() => {
+    console.log(
+      `>>>>>>>>>>>>>>>>> app.js ${process.env.REACT_APP_BASE_PATH}/inbox`
+    );
     addTenant();
   }, []);
 
@@ -54,7 +57,7 @@ const App = ({ updatedUserCredential }) => {
     <>
       <Router>
         <Switch>
-          <Route exact path="/client/index.html">
+          <Route exact path={`${process.env.REACT_APP_BASE_PATH}/inbox`}>
             <ChatShell socket={socket} type="inbox" />
           </Route>
         </Switch>
